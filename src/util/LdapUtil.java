@@ -61,6 +61,7 @@ public class LdapUtil {
 
 		try {
 			DirContext ctx = new InitialDirContext(env);
+			System.out.println(ctx);
 			if (ctx != null) {
 				String searchBase = "dc=trees,dc=co,dc=id";
 				String filter = "(&(objectCategory=Person))";

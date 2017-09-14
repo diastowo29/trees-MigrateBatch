@@ -3,45 +3,36 @@ package ticket;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.net.HttpURLConnection;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import util.ConnectProperties;
+public class ExportTicket {
 
-public class CallUrl {
-	
-	static int TIMED_OUT = 10000;
-	static String PROXY_IP = "172.21.8.65";
-	static int PROXY_PORT = 8080;
+	static final String URL = "";
+	static final String USER_AGENT = "";
+	static final String TOKEN = "";
 
-	private final static String USER_AGENT = "Mozilla/5.0";
-	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";
+	public static void main(String[] args) {
+		
+	}
 
-	static JSONArray jsonErr = new JSONArray();
-	static boolean conPro = new ConnectProperties().isTesting;
-
-	public static JSONObject readJsonFromUrl(String url, String method) {
+	public static JSONObject writeJsonFromUrl(String url, String method, JSONObject ticket) {
 		HttpURLConnection con = null;
-		JSONObject json = null;
+		JSONObject json = new JSONObject();
 		int retry = 1;
 		for (int i = 0; i < retry; i++) {
 			try {
-				Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(PROXY_IP, PROXY_PORT));
 				URL obj = new URL(url);
-				if(conPro){
-					con = (HttpURLConnection) obj.openConnection(proxy);
-				} else {
-					con = (HttpURLConnection) obj.openConnection();
-				}
+				con = (HttpURLConnection) obj.openConnection();
+
 				// optional default is GET
-				System.out.println("calling the APIS: " + url);
+				System.out.println("calling the api: " + url);
 				con.setRequestMethod(method);
 				con.setDoOutput(true);
 
@@ -49,26 +40,34 @@ public class CallUrl {
 				con.setRequestProperty("User-Agent", USER_AGENT);
 				con.addRequestProperty("Authorization", "Basic " + TOKEN);
 				con.addRequestProperty("Content-Type", "application/json; charset=UTF-8");
-				con.setConnectTimeout(TIMED_OUT);
-				con.setReadTimeout(TIMED_OUT);
-				System.out.println("Response Code: " + con.getResponseCode() + " " + con.getResponseMessage());
+				// con.setConnectTimeout(10000);
+				// con.setReadTimeout(10000);
+				// System.out.println(ticket);
+
+				OutputStream os = con.getOutputStream();
+				OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
+
+				osw.write(ticket.toString());
+				osw.flush();
+				System.out.println(con.getResponseCode() + " " + con.getResponseMessage());
 
 				if (con.getResponseCode() == 200) {
 					System.out.println("reading response..");
 					BufferedReader rd = new BufferedReader(
 							new InputStreamReader(con.getInputStream(), Charset.forName("UTF-8")));
 					String jsonText = readUser(rd);
-					if (jsonText.length() > 0) {
-						json = new JSONObject(jsonText);
-					}
+					json = new JSONObject(jsonText);
 				} else {
 					System.out.println("error, reading error response");
 					BufferedReader rd = new BufferedReader(
 							new InputStreamReader(con.getErrorStream(), Charset.forName("UTF-8")));
 					String jsonText = readUser(rd);
-					json = new JSONObject(jsonText);
+					if (con.getResponseCode() != 500) {
+						json = new JSONObject(jsonText);
+					}
 				}
 				json.put("responseCode", con.getResponseCode());
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				if (retry < 5) {

@@ -1,11 +1,10 @@
 package dev;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -42,7 +41,12 @@ import org.apache.poi.hssf.record.RowRecord;
 import org.apache.poi.hssf.record.SSTRecord;
 import org.apache.poi.hssf.record.StringRecord;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,8 +61,10 @@ public class UploadXLSDB implements HSSFListener {
 
 	private final static String USER_AGENT = "Mozilla/5.0";
 	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";
-	private final static String search_url = "https://idsmed.zendesk.com/api/v2/users/search.json?query=contactguid%3A";
-	private final static String search_org_url = "https://idsmed.zendesk.com/api/v2/organizations/search.json?external_id=";
+	// private final static String TOKEN =
+	// "ZWxkaWVuLmhhc21hbnRvQHRyZWVzc29sdXRpb25zLmNvbTpXM2xjb21lMTIz";
+	// TREESDEMO1
+	private final static String DOMAIN = "idsmed";
 	private static ArrayList<String> logList = new ArrayList<String>();
 	// private int lastRow;
 	private int thisMaxColumn;
@@ -99,6 +105,20 @@ public class UploadXLSDB implements HSSFListener {
 
 	StringBuffer INSERT = new StringBuffer();
 	StringBuffer CREATE = new StringBuffer();
+
+	private JSONObject newUsersObj = new JSONObject();
+	private JSONObject newUsersAnyObj = new JSONObject();
+	private JSONObject newUsersArray = new JSONObject();
+
+	private JSONObject newOrgObj = new JSONObject();
+	private JSONObject newOrgObjFix = new JSONObject();
+
+	static String filepath;
+
+	private JSONObject newOrgMemObj = new JSONObject();
+	private JSONObject newOrgMemObjFix = new JSONObject();
+
+	private static JSONArray updateMany = new JSONArray();
 
 	private StringRecord srec;
 	// private JSONArray userArr = new JSONArray();
@@ -359,10 +379,6 @@ public class UploadXLSDB implements HSSFListener {
 		default:
 			break;
 		}
-		// } /*else {
-		// System.out.println("test");
-		// }*/
-		// Handle new row
 		if (thisRow != -1 && thisRow != lastRowNumber) {
 			lastColumnNumber = -1;
 		}
@@ -438,229 +454,196 @@ public class UploadXLSDB implements HSSFListener {
 	}
 
 	public static void main(String[] args) throws IOException, JSONException {
-		// String test = "[{'organization':{'id':'13622088508','name':'PT. MUARA
-		// SAKTI'}},{'organization':{'id':'14037325288','name':'PT. DELVI
-		// PRIMATAMA-PT. DELVI
-		// PRIMATAMA'}},{'organization':{'id':'13621151408','name':'BEND. RSUD.
-		// DR.WAHIDIN SUDIRO HUSODO KODYA MOJOKERTO-BEND.
-		// RSUD.DR.WAHIDI'}},{'organization':{'id':'13601468868','name':'CASH
-		// SURABAYA'}},{'organization':{'id':'13961830887','name':'PT. BALI
-		// MEDIKA-RS. KASIH IBU
-		// KEDON'}},{'organization':{'id':'13621368568','name':'(NON AKTIF)
-		// BAPAK PUTRA-PUTRA,
-		// BAPAK'}},{'organization':{'id':'13621207928','name':'RS. HORAS
-		// INSANI'}},{'organization':{'id':'14030126268','name':'PT. HASNA
-		// MEDIKA-PT. HASNA
-		// MEDIKA'}},{'organization':{'id':'13601784068','name':'RS. PERMATA
-		// BUNDA'}},{'organization':{'id':'13621769628','name':'BEND.BENDAHARA
-		// RSUD KAB. BINTAN-RSUD KAB
-		// BINTAN'}},{'organization':{'id':'13621209008','name':'YAY. BAKTI
-		// TIMAH-YAY. BAKTI
-		// TIMAH'}},{'organization':{'id':'13601730308','name':'PT. SABANNA
-		// KUMITA'}},{'organization':{'id':'13600743628','name':'RSUD
-		// Purworejo-'}},{'organization':{'id':'14037325448','name':'PT.
-		// GUNANUSA UTAMA FABRICATORS-PT. GUNANUSA UTAMA
-		// F'}},{'organization':{'id':'13601662668','name':'FOUZAL
-		// ASWAD'}},{'organization':{'id':'13961832987','name':'RS. BINA
-		// KASIH'}},{'organization':{'id':'13601729468','name':'PT. GRAHA
-		// ALIYYAH-PT. GRAHA
-		// ALIYYA'}},{'organization':{'id':'13622079988','name':'PT. ANUGRAH
-		// PRAJA MANDIRI-ANUGRAH PRAJA
-		// MANDIR'}},{'organization':{'id':'13621369908','name':'PT. ZYMMA
-		// PERKASA-PT. ZYMMA
-		// PERKASA'}},{'organization':{'id':'14037325628','name':'(NON AKTIF)
-		// PT. GRATIA JAYA MULYA-PT. GRATIA JAYA
-		// MULY'}},{'organization':{'id':'13622079268','name':'PT. BENTARA
-		// KARTIKA BAKTI-RS SATYA
-		// NEGARA'}},{'organization':{'id':'13601729888','name':'Rs. Ahmad
-		// Yani-'}},{'organization':{'id':'13601783108','name':'PT.PEKANBARU
-		// MEDIKAL SENTER-RS
-		// PMC'}},{'organization':{'id':'13600701268','name':'RS Bergerak
-		// Sumbawa Tengah-'}},{'organization':{'id':'13601838048','name':'(NON
-		// AKTIF) DR.NOVRIANTI D. A, SpPD-NOVRIANTI D. A,
-		// DR,'}},{'organization':{'id':'13622087008','name':'PT. BINA DINAMIKA
-		// RAGA-IMPRESSIONS BODY
-		// CAR'}},{'organization':{'id':'13621369588','name':'PT. MUKA
-		// BERSERISERI-KLINIK SKIN
-		// PLUS'}},{'organization':{'id':'13600772928','name':'RSU KUDUS-RSU
-		// KUDUS'}},{'organization':{'id':'14030126448','name':'PT. MEDIKANA
-		// PRATAMAJAYA-PT. MEDIKANA
-		// PRATAMA'}},{'organization':{'id':'13600489508','name':'RS
-		// Santosa-'}},{'organization':{'id':'13967015967','name':'PT. OSHINDO
-		// MEDIKA PRATAMA-KLINIK
-		// MEDILAB-BATAM'}},{'organization':{'id':'13621133688','name':'DENNY
-		// SIMATUPANG'}},{'organization':{'id':'13600489188','name':'RS
-		// sudosoro-'}},{'organization':{'id':'13622086888','name':'PT.
-		// MEDIKALOKA DAAN MOGOT-MEDIKALOKA
-		// DAANMOGOT'}},{'organization':{'id':'13621388368','name':'CUT MELIZA
-		// ZAINUMI'}},{'organization':{'id':'14040740908','name':'PT. HARAPAN
-		// KELUARGA BAHAGIA-PERMATA LIPPO
-		// CIKARA'}},{'organization':{'id':'13621389688','name':'RSJ Daerah Dr.
-		// Amino
-		// Gondohutomo-'}},{'organization':{'id':'14040747268','name':'(NONAKTIF)
-		// RS. DR.MOEDJITO DWIDJOSISWOJO-RS. DR.MOEDJITO
-		// DWID'}},{'organization':{'id':'13961833927','name':'RSUD
-		// ABEPURA'}},{'organization':{'id':'13961834247','name':'RSUD.
-		// CIBINONG'}},{'organization':{'id':'13601842848','name':'(NON AKTIF)
-		// RSUD. KAB. DATI II SIDOARJO-DATI II
-		// SIDOARJO'}},{'organization':{'id':'13621134588','name':'IBU
-		// TIUR'}},{'organization':{'id':'13600772908','name':'RSUD SOEGIRI
-		// LAMONGAN-'}},{'organization':{'id':'13601729868','name':'PT. SENTRAL
-		// MEDIKA CEMERLANG-PT. SENTRAL MEDIKA
-		// C'}},{'organization':{'id':'13621134348','name':'ARIF FADILLAH,
-		// DR'}},{'organization':{'id':'13621395408','name':'PT. CITRA RAYA
-		// MEDIKA-RS CIPUTRA
-		// HOSPITAL'}},{'organization':{'id':'14040737448','name':'(NON AKTIF)
-		// PT. HARAPAN INTERNASIONAL-PT. HARAPAN INTERNAS'}}]";
-		File folder = new File("C:\\Users\\Diastowo\\Documents\\IDSMed\\CSV\\");
+		File folder = new File("C:\\Users\\Diastowo\\Documents\\Trees\\Trees-IDSMed\\CSV\\");
 		File[] files = folder.listFiles();
 		for (int i = 0; i < files.length; i++) {
-			long start = System.currentTimeMillis();
 			if (files[i].getName().contains("UserZendesk")) {
 				System.out.println(files[i].getName());
 				ExecuteUpload(files[i].toString(), "UserZendesk");
 			} else if (files[i].getName().contains("OrganizationZendesk")) {
 				System.out.println(files[i].getName());
 				ExecuteUpload(files[i].toString(), "OrganizationZendesk");
-				// } else if (files[i].getName().contains("MIGRATE")) {
-				// System.out.println(files[i].getName());
-				// ExecuteUpload(files[i].toString(), "Contact_relationship");
-			} else if (files[i].getName().contains("MIGRATEV3")) {
+			} else if (files[i].getName().contains("ContactRelationship")) {
 				System.out.println(files[i].getName());
-				ExecuteUpload(files[i].toString(), "organizationEdited");
+				ExecuteUpload(files[i].toString(), "Contact_relationship");
+			} else if (files[i].getName().contains("updateGroup")) {
+				System.out.println(files[i].getName());
+				ExecuteUpload(files[i].toString(), "updateGroup");
+				processArray(updateMany, updateMany.length());
 			} else {
 				System.out.println("TEST");
 			}
-			long elapsedTime = System.currentTimeMillis() - start;
-			System.out.println(elapsedTime);
+			// System.out.println(logList);
+			// System.out.println(jsonErr);
+		}
+	}
 
-			System.out.println(logList);
-			// LogWriter.main(null, logList);
-			logWriter(datas, jsonErr);
+	private static void processArray(JSONArray updateData, int length) throws JSONException {
+		// TODO Auto-generated method stub
+		JSONArray updateArray = new JSONArray();
+		try {
+			for (int i = 0; i < length; i++) {
+				updateArray.put(updateData.get(i));
+				if (i % 100 == 0) {
+					// System.out.println(updateArray.length());
+					System.out.println(new JSONObject().put("organizations", updateArray));
+					try {
+						doUpdate(null, new JSONObject().put("organizations", updateArray), "UpdateManyOrganization",
+								String.valueOf(i), 0);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					updateArray = new JSONArray();
+				} else if (i == length - 1) {
+					// System.out.println(updateArray.length());
+					System.out.println(new JSONObject().put("organizations", updateArray));
+					try {
+						doUpdate(null, new JSONObject().put("organizations", updateArray), "UpdateManyOrganization",
+								String.valueOf(i), 0);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+					updateArray = new JSONArray();
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
 	}
 
 	private static void ExecuteUpload(String uploadedFile, String dataType) throws FileNotFoundException, IOException {
 		System.out.println("===UploadedFile: " + uploadedFile);
+		filepath = uploadedFile;
 		UploadXLSDB xlsprocess = new UploadXLSDB(uploadedFile);
-		System.out.println(dataType);
+		// System.out.println(dataType);
 		datas = dataType;
 		xlsprocess.process();
 	}
 
 	private void extractRow(List<String> exRowList, int rowNumber, int rowlistCounts) throws JSONException {
-		JSONObject userObj = new JSONObject();
-		JSONObject xlsJson = new JSONObject();
-		boolean userIsNull = false;
-		try {
-			for (int i = 0; i < exRowList.size(); i++) {
-				if (datas.equalsIgnoreCase("Contact_relationship")) {
-					if (i == 0) {
-						try {
-							JSONObject jsons = getUser(search_url + exRowList.get(i), rowNumber, "users", exRowList);
-							if (jsons.getJSONArray("users").isNull(0)) {
-								userIsNull = true;
-								// System.out.println("USER is NULL: " +
-								// exRowList.get(i));
-								System.out.println(exRowList);
-								logList.add(exRowList.toString());
-							} else {
-								String userZendeskId = jsons.getJSONArray("users").getJSONObject(0).get("id")
-										.toString();
-								System.out.println("userZendeskID: " + userZendeskId);
-								xlsJson.put("user_id", userZendeskId);
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						// xlsJson.put("user_id", exRowList.get(i));
-					} else {
-						if (userIsNull) {
-							System.out.println("user is null, organization is null");
-						} else {
-							System.out.println("user not null, looking for organization");
-							try {
-								JSONObject jsons = getUser(search_org_url + exRowList.get(i), rowNumber, "organization",
-										exRowList);
-								if (jsons.getJSONArray("organizations").isNull(0)) {
-									// System.out.println("ORG is NULL: " +
-									// exRowList.get(i));
-									System.out.println(exRowList);
-									logList.add(exRowList.toString());
-								} else {
-									String orgZendeskId = jsons.getJSONArray("organizations").getJSONObject(0).get("id")
-											.toString();
-									System.out.println("orgZendeskID: " + orgZendeskId);
-									if (orgZendeskId == null) {
-										orgZendeskId = "";
-									}
-									xlsJson.put("organization_id", orgZendeskId);
-								}
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						}
-						// xlsJson.put("organization_id", exRowList.get(i));
-					}
-				} else if (datas.equalsIgnoreCase("organizationEdited")) {
+		if (datas.equalsIgnoreCase("UserZendesk")) {
+			if (rowNumber == 0) {
+				newUsersObj = new JSONObject();
+			} else {
+				for (int i = 0; i < exRowList.size(); i++) {
 					switch (i) {
 					case 0:
-						userObj.put("id", exRowList.get(i));
+						newUsersObj.put("id", Integer.valueOf(exRowList.get(i).replace("null", "")));
 						break;
 					case 1:
-						userObj.put("name", exRowList.get(i));
+						newUsersObj.put("name", exRowList.get(i));
+						break;
+					case 2:
+						newUsersObj.put("email", exRowList.get(i).replace("null", ""));
+						break;
+					case 3:
+						newUsersObj.put("phone", exRowList.get(i).replace("null", ""));
+						break;
+					case 4:
+						newUsersAnyObj.put("contactguid", exRowList.get(i).replace("null", ""));
+						newUsersObj.put("user_fields", newUsersAnyObj);
+						newUsersAnyObj = new JSONObject();
+						newUsersArray.put("user", newUsersObj);
 						break;
 					default:
 						break;
 					}
 				}
 			}
-			// System.out.println(userObj);
-			// rowCount++;
-			// System.out.println(exRowList);
-
-			/* FIXME USING CREATE MANY */
-			// userArr.put(xlsJson);
-			// // if (rowlistCount == 9) {
-			// // System.out.println("rowlistCount is 10");
-			// // System.out.println(logList);
-			// // }
-			// if (rowlistCount == 70) {
-			// userObj.put("organization", userObj);
-			// try {
-			// MigrateInit.main(null, userObj, datas, rowNumber);
-			// } catch (Exception e) {
-			// System.out.println("MIGRATE INIT ERROR: " + userObj);
-			// e.printStackTrace();
-			// }
-			// userArr = new JSONArray();
-			// } else if (rowCount == rowrec.getRowNumber() + 1) {
-			// userObj.put("organization", userObj);
-			// try {
-			// MigrateInit.main(null, userObj, datas, rowNumber);
-			// } catch (Exception e) {
-			// System.out.println("MIGRATE INIT ERROR: " + userObj);
-			// e.printStackTrace();
-			// }
-			// userArr = new JSONArray();
-			// }
-
-			/* FIXME UPDATE ORGANIZATION */
-			if (!userObj.get("name").toString().equalsIgnoreCase("kosong")
-					&& !userObj.get("id").toString().equalsIgnoreCase("zendesk_id")) {
-				System.out.println("id: " + userObj.getString("id") + new JSONObject().put("organization", userObj));
-				System.out.println(jsonErr);
-				try {
-					doUpdate(null, new JSONObject().put("organization", userObj), datas,
-							userObj.getString("id").toString());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			System.out.println("its done");
+			System.out.println(newUsersArray);
+			try {
+				if (rowNumber != 0) {
+					doUpdate(null, newUsersArray, datas, exRowList.get(0),
+							rowNumber);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (datas.equalsIgnoreCase("OrganizationZendesk")) {
+			// newOrgObjFix = new JSONObject();
+			if (rowNumber == 0) {
+				newOrgObj = new JSONObject();
+			} else {
+				for (int i = 0; i < exRowList.size(); i++) {
+					switch (i) {
+					case 0:
+						newOrgObj.put("id", exRowList.get(i));
+						break;
+					case 1:
+						newOrgObj.put("name", exRowList.get(i));
+						break;
+					case 2:
+						newOrgObj.put("organization_fields", new JSONObject().put("accountguid", exRowList.get(i)));
+						newOrgObjFix.put("organization", newOrgObj);
+						break;
+					default:
+						break;
+					}
 				}
 			}
+			System.out.println(newOrgObjFix);
+			try {
+				if (rowNumber != 0) {
+					doUpdate(null, newOrgObjFix, datas, newOrgObjFix.getJSONObject("organization").get("id").toString(),
+							rowNumber);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else if (datas.equalsIgnoreCase("UpdateGroup")) {
+			newOrgObj = new JSONObject();
+			if (rowNumber == 0) {
+				newOrgObj = new JSONObject();
+			} else {
+				for (int i = 0; i < exRowList.size(); i++) {
+					switch (i) {
+					case 0:
+						newOrgObj.put("id", Long.valueOf(exRowList.get(i)));
+						break;
+					case 1:
+						newOrgObj.put("name", exRowList.get(i));
+						break;
+					case 2:
+						newOrgObj.put("organization_fields", new JSONObject().put("accountguid", exRowList.get(i)));
+						break;
+					default:
+						break;
 
-		} catch (JSONException jsonx) {
-			jsonx.printStackTrace();
+					}
+				}
+			}
+			updateMany.put(newOrgObj);
+		} else if (datas.equalsIgnoreCase("Contact_relationship")) {
+			if (rowNumber == 0) {
+				newOrgMemObj = new JSONObject();
+			} else {
+				for (int i = 0; i < exRowList.size(); i++) {
+					switch (i) {
+					case 0:
+						newOrgMemObj.put("user_id", exRowList.get(i));
+						break;
+					case 1:
+						newOrgMemObj.put("organization_id", exRowList.get(i));
+						newOrgMemObjFix.put("organization_membership", newOrgMemObj);
+						break;
+					default:
+						break;
+					}
+				}
+			}
+			System.out.println(newOrgMemObjFix);
+			try {
+				if (rowNumber != 0) {
+					doUpdate(null, newOrgMemObjFix, datas,
+							newOrgMemObjFix.getJSONObject("organization_membership").get("user_id").toString(),
+							rowNumber);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			System.out.println("Permisi.. Numpang lewat.. :)");
 		}
 	}
 
@@ -709,42 +692,34 @@ public class UploadXLSDB implements HSSFListener {
 		return json;
 	}
 
-	public static void doUpdate(String[] args, JSONObject userObj, String dataType, String Row)
-			throws IOException, JSONException {
+	public static void doUpdate(String[] args, JSONObject userObj, String dataType, String id, int row)
+			throws IOException, JSONException, InvalidFormatException {
 		if (dataType.equalsIgnoreCase("UserZendesk")) {
 			System.out.println("UserZendesk");
-			urlAccount = "https://idsmed.zendesk.com/api/v2/users.json";
+			urlAccount = "https://" + DOMAIN + ".zendesk.com/api/v2/users.json";
 			METHOD = "POST";
 		} else if (dataType.equalsIgnoreCase("OrganizationZendesk")) {
 			System.out.println("OrganizationZendesk");
-			urlAccount = "https://idsmed.zendesk.com/api/v2/organization.json";
+			urlAccount = "https://" + DOMAIN + ".zendesk.com/api/v2/organizations/create_or_update.json";
 			METHOD = "POST";
 		} else if (dataType.equalsIgnoreCase("Contact_relationship")) {
 			System.out.println("Contact_relationship");
-			urlAccount = "https://idsmed.zendesk.com/api/v2/organization_memberships/create_many.json";
+			urlAccount = "https://" + DOMAIN + ".zendesk.com/api/v2/organization_memberships.json";
 			METHOD = "POST";
 		} else if (dataType.equalsIgnoreCase("organizationEdited")) {
 			System.out.println(dataType);
-			urlAccount = "https://idsmed.zendesk.com/api/v2/organizations/" + Row + ".json";
+			urlAccount = "https://" + DOMAIN + ".zendesk.com/api/v2/organizations/" + id + ".json";
+			METHOD = "PUT";
+		} else if (dataType.equalsIgnoreCase("UpdateManyOrganization")) {
+			System.out.println(dataType);
+			urlAccount = "https://" + DOMAIN + ".zendesk.com/api/v2/organizations/update_many.json";
 			METHOD = "PUT";
 		}
-		// System.out.println(userObj);
-		// System.out.println(userObj.getJSONArray("organization_memberships").length());
-		readJsonFromUrl(urlAccount, userObj, Row, METHOD);
-		// logWriter(dataType, jsonErr);
-		// System.out.println(jsonErr);
+		readJsonFromUrl(urlAccount, userObj, id, METHOD, row);
 	}
 
-	// private static String readAll(Reader rd) throws IOException {
-	// StringBuilder sb = new StringBuilder();
-	// int cp;
-	// while ((cp = rd.read()) != -1) {
-	// sb.append((char) cp);
-	// }
-	// return sb.toString();
-	// }
-
-	public static void readJsonFromUrl(String url, JSONObject user, String Row, String method) {
+	public static void readJsonFromUrl(String url, JSONObject user, String id, String method, int row)
+			throws JSONException, InvalidFormatException {
 		try {
 			System.out.println(url);
 			URL obj = new URL(url);
@@ -766,14 +741,43 @@ public class UploadXLSDB implements HSSFListener {
 			osw.write(user.toString());
 			osw.flush();
 			System.out.println(con.getResponseCode());
-
 			int responseCode = con.getResponseCode();
 			if (responseCode == 201 || responseCode == 200) {
-				System.out.println("Success creating data from row :" + Row);
+				System.out.println("Success creating data from row :" + id);
+				BufferedReader rd = new BufferedReader(
+						new InputStreamReader(con.getInputStream(), Charset.forName("UTF-8")));
+				String jsonText = readUser(rd);
+				JSONObject json = new JSONObject(jsonText);
+				FileInputStream fsIP = new FileInputStream(new File(filepath));
+				Workbook wb = WorkbookFactory.create(fsIP);
+				Sheet worksheet = wb.getSheetAt(0);
+				Cell cell = worksheet.getRow(row).createCell(10);
+				Cell cell2 = worksheet.getRow(row).createCell(11);
+				cell.setCellValue("Success");
+				cell2.setCellValue(json.getJSONObject("user").getString("id"));
+				fsIP.close();
+				FileOutputStream output_file = new FileOutputStream(new File(filepath));
+				wb.write(output_file);
+				output_file.close();
+
 			} else {
-				System.out.println("Error creating data from row :" + Row);
+				System.out.println("Error creating data from row :" + id);
 				jsonErr.put(user);
+				BufferedReader rd = new BufferedReader(
+						new InputStreamReader(con.getErrorStream(), Charset.forName("UTF-8")));
+				String jsonText = readUser(rd);
+				JSONObject json = new JSONObject(jsonText);
+				FileInputStream fsIP = new FileInputStream(new File(filepath));
+				Workbook wb = WorkbookFactory.create(fsIP);
+				Sheet worksheet = wb.getSheetAt(0);
+				Cell cell = worksheet.getRow(row).createCell(10);
+				cell.setCellValue("Error " + con.getResponseCode() + ": " + json);
+				fsIP.close();
+				FileOutputStream output_file = new FileOutputStream(new File(filepath));
+				wb.write(output_file);
+				output_file.close();
 			}
+			System.out.println(jsonErr);
 		} catch (ConnectException cex) {
 			jsonErr.put(user);
 			System.out.println("Connection Timeout !!!");
@@ -782,45 +786,6 @@ public class UploadXLSDB implements HSSFListener {
 			jsonErr.put(user);
 			System.out.println("IOException !!!");
 			ioex.printStackTrace();
-		}
-	}
-
-	public static void logWriter(String Datatype, JSONArray jsonArray) throws JSONException {
-		try {
-			File file = new File("C:/users/Diastowo/" + Datatype + "Cool.txt");
-
-			// if file doesnt exists, then create it
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			for (int i = 0; i < jsonArray.length(); i++) {
-				// System.out.println(jsonArray.getJSONObject(i).getJSONObject("organization").get("id"));
-				// for (int j = 0; j < jsonObject.getJSONArray(i).length(); j++)
-				// {
-				// boolean isOrg = true;
-				// if(isOrg ){
-				bw.write(jsonArray.getJSONObject(i).getJSONObject("organization").get("id") + ", "
-						+ jsonArray.getJSONObject(i).getJSONObject("organization").get("name"));
-				// } else {
-				// bw.write(jsonObject.getJSONArray(i).getJSONObject(j).getString("id")
-				// + ", "
-				// +
-				// jsonObject.getJSONArray(i).getJSONObject(j).getString("email")
-				// + ", "
-				// +
-				// jsonObject.getJSONArray(i).getJSONObject(j).getJSONObject("user_fields")
-				// .getString("contactguid"));
-				// }
-				bw.newLine();
-				// }
-
-			}
-			bw.close();
-			System.out.println("Done");
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 }

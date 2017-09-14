@@ -16,13 +16,20 @@ import org.json.JSONObject;
 public class GetUser {
 
 	private final static String USER_AGENT = "Mozilla/5.0";
-	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";
-//	private final static String TOKEN = "ZWxkaWVuLmhhc21hbnRvQHRyZWVzc29sdXRpb25zLmNvbTpXM2xjb21lMTIz";
-	private final static String users_url = "https://idsmed.zendesk.com/api/v2/organizations.json";
+	private final static String TOKEN = "ZWxkaWVuLmhhc21hbnRvQHRyZWVzc29sdXRpb25zLmNvbTpXZWxjb21lMQ=="; //UAT
+//	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM"; //LIVE
+	
+//	private final static String TOKEN = "ZWxkaWVuLmhhc21hbnRvQHRyZWVzc29sdXRpb25zLmNvbTpXM2xjb21lMTIz"; //TREESDEMO1
+	private final static String users_url = "https://idsmed1475491095.zendesk.com/api/v2/users.json";
+	private final static String org_url = "https://idsmed1475491095.zendesk.com/api/v2/organizations.json";
+	
+	static boolean isOrg = true;
 
 	public static void main(String[] args) {
-		boolean isOrg = true;
+//		boolean isOrg = true;
+		
 		String nextPage = null;
+		String typeData;
 		System.out.println("Getting org list..");
 		JSONObject jsonUser = new JSONObject();
 		JSONObject jsonNextUser = new JSONObject();
@@ -30,10 +37,13 @@ public class GetUser {
 		
 		try {
 			int count = 1;
-			jsonUser = getUser(users_url);
 			if(isOrg){
+				typeData = "ORG";
+				jsonUser = getUser(org_url);
 				usersArr.put(jsonUser.getJSONArray("organizations"));
 			} else {
+				typeData = "USERS";
+				jsonUser = getUser(users_url);
 				usersArr.put(jsonUser.getJSONArray("users"));
 			}
 			nextPage = (String) jsonUser.get("next_page");
@@ -41,12 +51,12 @@ public class GetUser {
 			while(nextPage!=null){
 				count++;
 				System.out.println(nextPage);
-				System.out.println("Getting another ORG..");
+				System.out.println("Getting another records..");
 				jsonNextUser = getUser(nextPage);
 				if(isOrg){
-					usersArr.put(jsonUser.getJSONArray("organizations"));
+					usersArr.put(jsonNextUser.getJSONArray("organizations"));
 				} else {
-					usersArr.put(jsonUser.getJSONArray("users"));
+					usersArr.put(jsonNextUser.getJSONArray("users"));
 				}
 				System.out.println(usersArr.length());
 				if(!jsonNextUser.get("next_page").toString().equals("null")){
@@ -54,8 +64,7 @@ public class GetUser {
 				} else {
 					nextPage = null;
 				}
-//				System.out.println(jsonNextUser.getJSONArray("organizations").length());
-				UsersWriter.main(null, usersArr, count);
+				UsersWriter.main(null, usersArr, count, isOrg, typeData);
 			}
 			
 		} catch (ConnectException e) {

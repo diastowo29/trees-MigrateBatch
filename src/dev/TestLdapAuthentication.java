@@ -22,7 +22,7 @@ public class TestLdapAuthentication {
 
 		@SuppressWarnings("rawtypes")
 		ArrayList data = LdapUtil.getEmailAndFullName(host, username, password);
-		// System.out.println(data);
+		System.out.println(data);
 		for (int i = 0; i < data.size(); i++) {
 			hMap = (HashMap<String, String>) data.get(i);
 			System.out.println(hMap);
@@ -30,13 +30,15 @@ public class TestLdapAuthentication {
 				if (!hMap.get("mail").equalsIgnoreCase("null")) {
 					System.out.println("CREATE NEW AGENT");
 					try {
-						response = ZendeskAPICall.makeRequest(api.userCreate, new JSONObject()
-								.put("user",
-										new JSONObject().put("name", hMap.get("name").toString())
-												.put("email", hMap.get("mail").toString()).put("role", "agent"))
-								/*FIXME add msadusername*/
-								/*.put("user_fields",
-										new JSONObject().put("msadusername", hMap.get("msadusername").toString()))*/);
+						response = ZendeskAPICall.makeRequest(api.userCreate,
+								new JSONObject().put("user", new JSONObject().put("name", hMap.get("name").toString())
+										.put("email", hMap.get("mail").toString()).put("role", "agent"))
+						/* FIXME add msadusername */
+						/*
+						 * .put("user_fields", new
+						 * JSONObject().put("msadusername",
+						 * hMap.get("msadusername").toString()))
+						 */);
 						System.out.println(response);
 						if (response.get("responseCode").toString().equals("200")
 								|| response.get("responseCode").toString().equals("201")) {
