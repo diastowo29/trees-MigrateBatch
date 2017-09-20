@@ -46,7 +46,7 @@ public class GetTicketList {
 	// "https://idsmed.zendesk.com";
 
 //	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN + "/api/v2/search.json?query=type:ticket%20645";
-	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN +"/api/v2/search.json?query=type:ticket%20updated%3E12hours&sort_by=created_at&sort_order=asc";
+	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN +"/api/v2/search.json?query=type:ticket%20updated%3E10minutes&sort_by=created_at&sort_order=asc";
 	// private final static String URL_TICKET_ZENDESK_TESTING = ZENDESK_DOMAIN +
 	// "/api/v2/search.json?query=160";
 
@@ -106,7 +106,8 @@ public class GetTicketList {
 		if (isProd) {
 			// - 8 to adjust UTC
 			// - 12 to adjust Windows Scheduler
-			cal.add(Calendar.HOUR, -20);
+			cal.add(Calendar.HOUR, -8);
+			cal.add(Calendar.MINUTE, -10);
 		} else {
 			// - 7 to adjust UTC
 			cal.add(Calendar.HOUR, -7);
