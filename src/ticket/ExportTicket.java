@@ -32,11 +32,11 @@ public class ExportTicket {
 	static boolean nextPage = true;
 
 	public static void main(String[] args) throws JSONException {
-		String nextPageUrl = "https://bluebirdgroupid.zendesk.com/api/v2/tickets.json?page=800";
+		String nextPageUrl = "https://bluebirdgroupid.zendesk.com/api/v2/tickets.json?page=960";
 		JSONObject ticketList = null;
 		JSONObject ticketFields = null;
 		ArrayList<String> ticketFieldsName = new ArrayList<String>();
-		int count = 799;
+		int count = 959;
 		while (nextPage) {
 			count++;
 			if (nextPageUrl.isEmpty()) {
