@@ -51,7 +51,7 @@ public class GetUserList {
 
 	private static void doWriteLog(JSONArray userLists, int count) throws JSONException {
 		try {
-			File fileTicket = new File("C:/Users/Aumiz/Documents/IDSMED/TestUsersData__" + count + ".txt");
+			File fileTicket = new File("C:/Users/Aumiz/Documents/IDSMED/UsersData__" + count + ".txt");
 			if (!fileTicket.exists()) {
 				fileTicket.createNewFile();
 			}
