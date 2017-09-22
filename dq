@@ -1,0 +1,205 @@
+[33mcommit 98a005a72dada0ab252fdedbeda6437d308a240b[m
+Author: diastowo <diastowo@gmail.com>
+Date:   Wed Sep 20 16:22:41 2017 +0700
+
+    export users
+
+[1mdiff --git a/src/ticket/ExportTicket.java b/src/ticket/ExportTicket.java[m
+[1mindex 63de5f1..739644a 100644[m
+[1m--- a/src/ticket/ExportTicket.java[m
+[1m+++ b/src/ticket/ExportTicket.java[m
+[36m@@ -32,11 +32,11 @@[m [mpublic class ExportTicket {[m
+ 	static boolean nextPage = true;[m
+ [m
+ 	public static void main(String[] args) throws JSONException {[m
+[31m-		String nextPageUrl = "https://bluebirdgroupid.zendesk.com/api/v2/tickets.json?page=800";[m
+[32m+[m		[32mString nextPageUrl = "https://bluebirdgroupid.zendesk.com/api/v2/tickets.json?page=960";[m
+ 		JSONObject ticketList = null;[m
+ 		JSONObject ticketFields = null;[m
+ 		ArrayList<String> ticketFieldsName = new ArrayList<String>();[m
+[31m-		int count = 799;[m
+[32m+[m		[32mint count = 959;[m
+ 		while (nextPage) {[m
+ 			count++;[m
+ 			if (nextPageUrl.isEmpty()) {[m
+[1mdiff --git a/src/user/GetUserList.java b/src/user/GetUserList.java[m
+[1mindex e7c5f3a..72ce8b5 100644[m
+[1m--- a/src/user/GetUserList.java[m
+[1m+++ b/src/user/GetUserList.java[m
+[36m@@ -1,6 +1,9 @@[m
+ package user;[m
+ [m
+ import java.io.BufferedReader;[m
+[32m+[m[32mimport java.io.BufferedWriter;[m
+[32m+[m[32mimport java.io.File;[m
+[32m+[m[32mimport java.io.FileWriter;[m
+ import java.io.IOException;[m
+ import java.io.InputStreamReader;[m
+ import java.io.Reader;[m
+[36m@@ -9,49 +12,138 @@[m [mimport java.net.URL;[m
+ import java.nio.charset.Charset;[m
+ [m
+ import org.json.JSONArray;[m
+[32m+[m[32mimport org.json.JSONException;[m
+ import org.json.JSONObject;[m
+ [m
+ public class GetUserList {[m
+ 	private final static String USER_AGENT = "Mozilla/5.0";[m
+[31m-	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";[m
+[31m-	private final static String URL_USER_ZENDESK = "https://idsmed.zendesk.com/api/v2/users.json";[m
+[32m+[m	[32mprivate final static String TOKEN = "aGVybWF3YW5AYmx1ZWJpcmRncm91cC5jb206SmFrYXJ0YTIwMTcj";[m
+[32m+[m	[32mprivate final static String URL_USER_ZENDESK = "https://bluebirdgroupid.zendesk.com/api/v2/users.json";[m
+ 	// private final static String TOKEN =[m
+ 	// "e18bc42a0783f79f3ce9cb8a2791a2c7527cc554d83a4bf16d238ba90436df7c";\[m
+[31m-	static JSONArray jsonErr = new JSONArray();[m
+[32m+[m[32m//	static JSONArray jsonErr = new JSONArray();[m
+[32m+[m	[32mstatic JSONArray userArray = new JSONArray();[m
+[32m+[m	[32mstatic String nextPage = "https://bluebirdgroupid.zendesk.com/api/v2/users.json?page=238";[m
+ [m
+[31m-	public static void main(String[] args) {[m
+[31m-		readJsonFromUrl(URL_USER_ZENDESK, "GET");[m
+[32m+[m	[32mpublic static void main(String[] args) throws JSONException {[m
+[32m+[m		[32mboolean isNextPage = true;[m
+[32m+[m		[32mint count = 237;[m
+[32m+[m		[32mwhile (isNextPage) {[m
+[32m+[m			[32mcount++;[m
+[32m+[m			[32mString URL = "";[m
+[32m+[m			[32mif (nextPage.isEmpty()) {[m
+[32m+[m				[32mURL = URL_USER_ZENDESK;[m
+[32m+[m			[32m} else {[m
+[32m+[m				[32mURL = nextPage;[m
+[32m+[m			[32m}[m
+[32m+[m			[32mJSONObject users = doGetUsers(URL, "GET");[m
+[32m+[m			[32mnextPage = users.getString("next_page");[m
+[32m+[m
+[32m+[m			[32mif (nextPage.isEmpty() || nextPage == null) {[m
+[32m+[m				[32misNextPage = false;[m
+[32m+[m			[32m} else {[m
+[32m+[m				[32misNextPage = true;[m
+[32m+[m			[32m}[m
+[32m+[m			[32mdoWriteLog(userArray, count);[m
+[32m+[m			[32muserArray = new JSONArray();[m
+[32m+[m		[32m}[m
+ 	}[m
+ [m
+[31m-	public static void readJsonFromUrl(String url, String method) {[m
+[31m-		HttpURLConnection con = null;[m
+[31m-		JSONObject json = null;[m
+[32m+[m	[32mprivate static void doWriteLog(JSONArray userLists, int count) throws JSONException {[m
+ 		try {[m
+[31m-			URL obj = new URL(url);[m
+[31m-			con = (HttpURLConnection) obj.openConnection();[m
+[31m-			// optional default is GET[m
+[31m-			con.setRequestMethod(method);[m
+[31m-			con.setDoOutput(true);[m
+[31m-[m
+[31m-			// add request header[m
+[31m-			con.setRequestProperty("User-Agent", USER_AGENT);[m
+[31m-			con.addRequestProperty("Authorization", "Basic " + TOKEN);[m
+[31m-			con.addRequestProperty("Content-Type", "application/json; charset=UTF-8");[m
+[31m-[m
+[31m-			if (con.getResponseCode() == 200) {[m
+[31m-				BufferedReader rd = new BufferedReader([m
+[31m-						new InputStreamReader(con.getInputStream(), Charset.forName("UTF-8")));[m
+[31m-				String jsonText = readUser(rd);[m
+[31m-				json = new JSONObject(jsonText);[m
+[31m-				System.out.println(json);[m
+[32m+[m			[32mFile fileTicket = new File("C:/Users/Aumiz/Documents/IDSMED/UsersData__" + count + ".txt");[m
+[32m+[m			[32mif (!fileTicket.exists()) {[m
+[32m+[m				[32mfileTicket.createNewFile();[m
+[32m+[m			[32m}[m
+[32m+[m
+[32m+[m			[32mFileWriter fw = new FileWriter(fileTicket.getAbsoluteFile());[m
+[32m+[m			[32mBufferedWriter bw = new BufferedWriter(fw);[m
+[32m+[m			[32mStringBuffer header = new StringBuffer("id ~ name");[m
+[32m+[m			[32mbw.write(header.toString());[m
+[32m+[m			[32mbw.newLine();[m
+[32m+[m			[32mfor (int i = 0; i < userLists.length(); i++) {[m
+[32m+[m				[32mbw.write(userLists.getJSONObject(i).getString("id") + " ~ " + userLists.getJSONObject(i).getString("name"));[m
+[32m+[m				[32mbw.newLine();[m
+ 			}[m
+[31m-		} catch (Exception e) {[m
+[32m+[m
+[32m+[m			[32mbw.close();[m
+[32m+[m			[32mSystem.out.println("Done");[m
+[32m+[m
+[32m+[m		[32m} catch (IOException e) {[m
+ 			e.printStackTrace();[m
+[31m-		} finally {[m
+[31m-			con.disconnect();[m
+ 		}[m
+ 	}[m
+ [m
+[32m+[m	[32mpublic static JSONObject doGetUsers(String urlUserZendesk, String string) throws JSONException {[m
+[32m+[m
+[32m+[m		[32mJSONObject userList = readJsonFromUrl(urlUserZendesk, "GET");[m
+[32m+[m		[32mfor (int i = 0; i < userList.getJSONArray("users").length(); i++) {[m
+[32m+[m			[32muserArray.put(new JSONObject().put("id", userList.getJSONArray("users").getJSONObject(i).get("id"))[m
+[32m+[m					[32m.put("name", userList.getJSONArray("users").getJSONObject(i).get("name")));[m
+[32m+[m		[32m}[m
+[32m+[m
+[32m+[m		[32mreturn userList;[m
+[32m+[m	[32m}[m
+[32m+[m
+[32m+[m	[32mpublic static JSONObject readJsonFromUrl(String url, String method) {[m
+[32m+[m		[32mHttpURLConnection con = null;[m
+[32m+[m		[32mJSONObject json = new JSONObject();[m
+[32m+[m		[32mint retry = 1;[m
+[32m+[m		[32mfor (int i = 0; i < retry; i++) {[m
+[32m+[m			[32mtry {[m
+[32m+[m				[32mURL obj = new URL(url);[m
+[32m+[m				[32mcon = (HttpURLConnection) obj.openConnection();[m
+[32m+[m
+[32m+[m				[32m// optional default is GET[m
+[32m+[m				[32mSystem.out.println("calling the api: " + url);[m
+[32m+[m				[32mcon.setRequestMethod(method);[m
+[32m+[m				[32mcon.setDoOutput(true);[m
+[32m+[m
+[32m+[m				[32m// add request header[m
+[32m+[m				[32mcon.setRequestProperty("User-Agent", USER_AGENT);[m
+[32m+[m				[32mcon.addRequestProperty("Authorization", "Basic " + TOKEN);[m
+[32m+[m				[32mcon.addRequestProperty("Content-Type", "application/json; charset=UTF-8");[m
+[32m+[m				[32m// con.setConnectTimeout(10000);[m
+[32m+[m				[32m// con.setReadTimeout(10000);[m
+[32m+[m				[32m// System.out.println(ticket);[m
+[32m+[m
+[32m+[m				[32m// OutputStream os = con.getOutputStream();[m
+[32m+[m				[32m// OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");[m
+[32m+[m				[32m//[m
+[32m+[m				[32m// osw.write(ticket.toString());[m
+[32m+[m				[32m// osw.flush();[m
+[32m+[m
+[32m+[m				[32mSystem.out.println(con.getResponseCode() + " " + con.getResponseMessage());[m
+[32m+[m
+[32m+[m				[32mif (con.getResponseCode() == 200) {[m
+[32m+[m					[32mSystem.out.println("reading response..");[m
+[32m+[m					[32mBufferedReader rd = new BufferedReader([m
+[32m+[m							[32mnew InputStreamReader(con.getInputStream(), Charset.forName("UTF-8")));[m
+[32m+[m					[32mString jsonText = readUser(rd);[m
+[32m+[m					[32mjson = new JSONObject(jsonText);[m
+[32m+[m				[32m} else {[m
+[32m+[m					[32mSystem.out.println("error, reading error response");[m
+[32m+[m					[32mBufferedReader rd = new BufferedReader([m
+[32m+[m							[32mnew InputStreamReader(con.getErrorStream(), Charset.forName("UTF-8")));[m
+[32m+[m					[32mString jsonText = readUser(rd);[m
+[32m+[m					[32mif (con.getResponseCode() != 500) {[m
+[32m+[m						[32mjson = new JSONObject(jsonText);[m
+[32m+[m					[32m}[m
+[32m+[m				[32m}[m
+[32m+[m				[32mjson.put("responseCode", con.getResponseCode());[m
+[32m+[m
+[32m+[m			[32m} catch (Exception e) {[m
+[32m+[m				[32me.printStackTrace();[m
+[32m+[m				[32mif (retry < 5) {[m
+[32m+[m					[32mretry++;[m
+[32m+[m				[32m}[m
+[32m+[m			[32m} finally {[m
+[32m+[m				[32mcon.disconnect();[m
+[32m+[m			[32m}[m
+[32m+[m		[32m}[m
+[32m+[m		[32mreturn json;[m
+[32m+[m	[32m}[m
+[32m+[m
+ 	private static String readUser(Reader rd) throws IOException {[m
+ 		StringBuilder sb = new StringBuilder();[m
+ 		int cp;[m

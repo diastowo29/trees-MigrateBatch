@@ -21,13 +21,13 @@ public class GetUserList {
 	private final static String URL_USER_ZENDESK = "https://bluebirdgroupid.zendesk.com/api/v2/users.json";
 	// private final static String TOKEN =
 	// "e18bc42a0783f79f3ce9cb8a2791a2c7527cc554d83a4bf16d238ba90436df7c";\
-//	static JSONArray jsonErr = new JSONArray();
+
 	static JSONArray userArray = new JSONArray();
-	static String nextPage = "https://bluebirdgroupid.zendesk.com/api/v2/users.json?page=238";
+	static String nextPage = "";
 
 	public static void main(String[] args) throws JSONException {
 		boolean isNextPage = true;
-		int count = 237;
+		int count = 0;
 		while (isNextPage) {
 			count++;
 			String URL = "";
@@ -51,7 +51,7 @@ public class GetUserList {
 
 	private static void doWriteLog(JSONArray userLists, int count) throws JSONException {
 		try {
-			File fileTicket = new File("C:/Users/Aumiz/Documents/IDSMED/UsersData__" + count + ".txt");
+			File fileTicket = new File("C:/Users/Aumiz/Documents/IDSMED/TestUsersData__" + count + ".txt");
 			if (!fileTicket.exists()) {
 				fileTicket.createNewFile();
 			}
@@ -62,7 +62,8 @@ public class GetUserList {
 			bw.write(header.toString());
 			bw.newLine();
 			for (int i = 0; i < userLists.length(); i++) {
-				bw.write(userLists.getJSONObject(i).getString("id") + " ~ " + userLists.getJSONObject(i).getString("name"));
+				bw.write(userLists.getJSONObject(i).getString("id") + " ~ "
+						+ userLists.getJSONObject(i).getString("name"));
 				bw.newLine();
 			}
 
@@ -78,6 +79,7 @@ public class GetUserList {
 
 		JSONObject userList = readJsonFromUrl(urlUserZendesk, "GET");
 		for (int i = 0; i < userList.getJSONArray("users").length(); i++) {
+			System.out.println(userList.getJSONArray("users").getJSONObject(i).get("name"));
 			userArray.put(new JSONObject().put("id", userList.getJSONArray("users").getJSONObject(i).get("id"))
 					.put("name", userList.getJSONArray("users").getJSONObject(i).get("name")));
 		}
