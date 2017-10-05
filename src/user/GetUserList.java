@@ -23,11 +23,11 @@ public class GetUserList {
 	// "e18bc42a0783f79f3ce9cb8a2791a2c7527cc554d83a4bf16d238ba90436df7c";\
 
 	static JSONArray userArray = new JSONArray();
-	static String nextPage = "";
+	static String nextPage = "https://bluebirdgroupid.zendesk.com/api/v2/users.json?page=242";
 
 	public static void main(String[] args) throws JSONException {
 		boolean isNextPage = true;
-		int count = 0;
+		int count = 241;
 		while (isNextPage) {
 			count++;
 			String URL = "";

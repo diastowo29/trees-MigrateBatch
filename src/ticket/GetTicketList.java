@@ -45,8 +45,8 @@ public class GetTicketList {
 	// private final static String ZENDESK_DOMAIN =
 	// "https://idsmed.zendesk.com";
 
-//	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN + "/api/v2/search.json?query=type:ticket%20645";
-	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN +"/api/v2/search.json?query=type:ticket%20updated%3E10minutes&sort_by=created_at&sort_order=asc";
+	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN + "/api/v2/search.json?query=type:ticket%20722";
+//	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN +"/api/v2/search.json?query=type:ticket%20updated%3E10minutes&sort_by=created_at&sort_order=asc";
 	// private final static String URL_TICKET_ZENDESK_TESTING = ZENDESK_DOMAIN +
 	// "/api/v2/search.json?query=160";
 
@@ -73,7 +73,7 @@ public class GetTicketList {
 
 	static JSONArray jsonErr = new JSONArray();
 
-	private static String AUTH_TOKEN = "Ehjp5St4nGGDsK7CZu16M2ztcz3LG00uDAT8F63epFw=";
+	private static String IDSCRM_AUTH_TOKEN = "Ehjp5St4nGGDsK7CZu16M2ztcz3LG00uDAT8F63epFw=";
 
 	static Date oneHourBack = null;
 	static boolean isChild = true;
@@ -219,7 +219,7 @@ public class GetTicketList {
 									System.out.println("PENDING sync");
 									// FIXME UPDATE CASE
 									System.out.println("already synced, begin UPDATE");
-									ticket.put("AuthenticationToken", AUTH_TOKEN);
+									ticket.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
 									ticket.put("TicketNo", ticketID);
 									switch (ticketList.getJSONObject(i).get("status").toString()) {
 									case "open":
@@ -263,7 +263,7 @@ public class GetTicketList {
 										JSONObject getOrg = CallUrl.readJsonFromUrl(URL_ZENDESK_USER_ORG.toString(), "GET");
 										
 										if (getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString().equalsIgnoreCase("null")) {
-											System.out.println("ORG GUID is NULL");
+											System.out.println("ORG GUID is NULL - PENDING");
 											updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
 											errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG GUID is NULL"));
 //											errorLogHash.put("ticketID", ticketID);
@@ -359,7 +359,7 @@ public class GetTicketList {
 											}
 										}
 									}
-									ticket.put("AuthenticationToken", AUTH_TOKEN);
+									ticket.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
 									ticket.put("TicketNo", ticketID);
 									ticket.put("Subject", ticketList.getJSONObject(i).get("subject"));
 									ticket.put("CustomerID", new_customer.replace("{", "").replace("}", ""));
@@ -413,7 +413,7 @@ public class GetTicketList {
 										JSONObject getOrg = CallUrl.readJsonFromUrl(URL_ZENDESK_USER_ORG.toString(), "GET");
 //										getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString();
 										if (getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString().equalsIgnoreCase("null")) {
-											System.out.println("ORG GUID is NULL");
+											System.out.println("ORG GUID is NULL - FAILED");
 											updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
 											errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG GUID is NULL"));
 //											errorLogHash.put("ticketID", ticketID);
@@ -643,6 +643,7 @@ public class GetTicketList {
 		JSONObject notes = new JSONObject();
 		JSONObject comments = getTicketComments(ticketList.get("id").toString());
 		JSONArray commentz = comments.getJSONArray("comments");
+		boolean isError = false;
 
 		for (int a = 0; a < commentz.length(); a++) {
 			notes = new JSONObject();
@@ -653,7 +654,7 @@ public class GetTicketList {
 			}
 			if (newTicket) {
 				System.out.println("new comment on new ticket");
-				notes.put("AuthenticationToken", AUTH_TOKEN);
+				notes.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
 				notes.put("TicketNo", ticketList.get("id").toString());
 				notes.put("Subject", ticketList.get("subject"));
 				notes.put("Body", commentz.getJSONObject(a).get("body"));
@@ -678,15 +679,15 @@ public class GetTicketList {
 						new JSONObject().put("note", notes));
 				// System.out.println(createNotes);
 				if (createNotes.has("Error")) {
-					updateTicketFailed(FAILED_CREATE_NOTE_ERROR, ticketList.get("id").toString(), SYNC_TO_CRM, PENDING);
+					isError = true;
 				} else {
 					System.out.println("DONE");
-					updateTicketSuccess(ticketList.get("id").toString(), SYNC_TO_CRM, SYNCED);
+//					updateTicketSuccess(ticketList.get("id").toString(), SYNC_TO_CRM, SYNCED);
 				}
 			} else {
 				if (date2.compareTo(oneHourBack) > 0) {
 					System.out.println("new comment");
-					notes.put("AuthenticationToken", AUTH_TOKEN);
+					notes.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
 					notes.put("TicketNo", ticketList.get("id").toString());
 					notes.put("Subject", ticketList.get("subject"));
 					notes.put("Body", commentz.getJSONObject(a).get("body"));
@@ -711,17 +712,23 @@ public class GetTicketList {
 							new JSONObject().put("note", notes));
 					// System.out.println(createNotes);
 					if (createNotes.has("Error")) {
-						updateTicketFailed(FAILED_CREATE_NOTE_ERROR, ticketList.get("id").toString(), SYNC_TO_CRM,
-								PENDING);
+						isError = true;
+//						updateTicketFailed(FAILED_CREATE_NOTE_ERROR, ticketList.get("id").toString(), SYNC_TO_CRM,
+//								PENDING);
 					} else {
 						System.out.println("DONE create NOTES");
-						updateTicketSuccess(ticketList.get("id").toString(), SYNC_TO_CRM, SYNCED);
 					}
 				} else {
 					System.out.println("No New Notes Created");
 				}
 			}
 		}
+		if (isError) {
+			updateTicketFailed(FAILED_CREATE_NOTE_ERROR, ticketList.get("id").toString(), SYNC_TO_CRM, PENDING);
+		} else {
+			updateTicketSuccess(ticketList.get("id").toString(), SYNC_TO_CRM, SYNCED);
+		}
+		isError = false;
 	}
 
 	private static JSONObject getTicketComments(String ticketId) {
@@ -742,6 +749,7 @@ public class GetTicketList {
 		if (!reason.equalsIgnoreCase(FAILED_ORG_NULL)) {
 			updateZendTicketBody.put("comment", new JSONObject().put("body", reason).put("public", "false"));
 		}
+		System.out.println(updateZendTicketBody);
 		JSONObject updateZendTicket = writeJsonFromUrl(URL_UPDATE_TICKET_ZENDESK.toString(), "PUT",
 				new JSONObject().put("ticket", updateZendTicketBody));
 		// System.out.println(updateZendTicket);
