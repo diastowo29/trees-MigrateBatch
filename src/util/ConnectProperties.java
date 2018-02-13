@@ -1,7 +1,7 @@
 package util;
 
 public class ConnectProperties {
-	public Boolean isDeploying = false;
+	public Boolean isDeploying = true;
 
 	public enum methods {
 		GET, POST, PUT, DELETE
