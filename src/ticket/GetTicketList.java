@@ -31,39 +31,56 @@ public class GetTicketList {
 	static String PROXY_IP = "172.21.8.65";
 	static int PROXY_PORT = 8080;
 	private final static String FAILED_ORG_NULL = "Failed to Sync to CRM due cannot get Organization/Account info";
-//	private final static String FAILED_ORG_GUID_NULL = "Failed to Sync to CRM due cannot get Organization/Account GUID or Organization/Account GUID is null";
 	private final static String FAILED_CREATE_NOTE_ERROR = "Failed to Sync to CRM Note Error";
 	private final static String FAILED_CREATE_TICKET_ERROR = "Failed to Sync to CRM Ticket Error";
 
 	private final static String USER_AGENT = "Mozilla/5.0";
-	private final static String TOKEN = "ZWxkaWVuLmhhc21hbnRvQHRyZWVzc29sdXRpb25zLmNvbTpXZWxjb21lMQ==";
-	private final static String ZENDESK_DOMAIN = "https://idsmed1475491095.zendesk.com";
 
-	// FIXME PROD CREDENTiAL
+	/* FIXME UAT CREDENTIAL */
 	// private final static String TOKEN =
-	// "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";
+	// "ZWxkaWVuLmhhc21hbnRvQHRyZWVzc29sdXRpb25zLmNvbTpXZWxjb21lMQ==";
 	// private final static String ZENDESK_DOMAIN =
-	// "https://idsmed.zendesk.com";
+	// "https://idsmed1475491095.zendesk.com";
 
-	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN + "/api/v2/search.json?query=type:ticket%20722";
-//	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN +"/api/v2/search.json?query=type:ticket%20updated%3E10minutes&sort_by=created_at&sort_order=asc";
-	// private final static String URL_TICKET_ZENDESK_TESTING = ZENDESK_DOMAIN +
-	// "/api/v2/search.json?query=160";
+	/* FIXME PROD CREDENTIAL */
+	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";
+	private final static String ZENDESK_DOMAIN = "https://idsmed.zendesk.com";
 
+//	 private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN +
+//	 "/api/v2/search.json?query=type:ticket%206323";
+	private final static String URL_TICKET_ZENDESK = ZENDESK_DOMAIN
+			+ "/api/v2/search.json?query=type:ticket%20updated%3E11minutes&sort_by=created_at&sort_order=asc";
+
+	/* FIXME LOCAL/UAT/SIT APALAH NAMANYA Local CRM Prod */
 	private final static String URL_CREATE_TICKET_CRM = "https://idsmedmobileapps.lfuat.net/zendesk-api/Zendesk.asmx/createCase";
 	private final static String URL_UPDATE_TICKET_CRM = "https://idsmedmobileapps.lfuat.net/zendesk-api/Zendesk.asmx/updateCase";
 	private final static String URL_CREATE_NOTES_CRM = "https://idsmedmobileapps.lfuat.net/zendesk-api/Zendesk.asmx/CreateNote";
 
-	//FIXME UAT
-	private final static String SYNC_TO_CRM = "52066448";
-	private final static String CASE_TYPE = "46314427";
-	private final static String INSTALL_BASE_ID = "46314467";
-	private final static String CASE_CATEGORY = "43566688";
+	/* FIXME LOCAL/UAT/SIT APALAH NAMANYA Local CRM UAT */
+	// private final static String URL_CREATE_TICKET_CRM =
+	// "https://idsmedmobileapps.lfuat.net/zendeskAPIUAT/Zendesk.asmx/createCase";
+	// private final static String URL_UPDATE_TICKET_CRM =
+	// "https://idsmedmobileapps.lfuat.net/zendeskAPIUAT/Zendesk.asmx/updateCase";
+	// private final static String URL_CREATE_NOTES_CRM =
+	// "https://idsmedmobileapps.lfuat.net/zendeskAPIUAT/Zendesk.asmx/CreateNote";
 
-	// private final static String SYNC_TO_CRM = "76932108";
-	// private final static String CASE_TYPE = "47282847";
-	// private final static String INSTALL_BASE_ID = "47283467";
+	// private final static String URL_CREATE_TICKET_CRM =
+	// "https://idsmedmobileapps.lfuat.net/zendesk-api/Zendesk.asmx/createCase";
+	// private final static String URL_UPDATE_TICKET_CRM =
+	// "https://idsmedmobileapps.lfuat.net/zendesk-api/Zendesk.asmx/updateCase";
+	// private final static String URL_CREATE_NOTES_CRM =
+	// "https://idsmedmobileapps.lfuat.net/zendesk-api/Zendesk.asmx/CreateNote";
+
+	/* FIXME LOCAL/UAT/SIT APALAH NAMANYA */
+	// private final static String SYNC_TO_CRM = "52066448";
+	// private final static String CASE_TYPE = "46314427";
+	// private final static String INSTALL_BASE_ID = "46314467";
 	// private final static String CASE_CATEGORY = "43566688";
+
+	private final static String SYNC_TO_CRM = "76932108";
+	private final static String CASE_TYPE = "47282847";
+	private final static String INSTALL_BASE_ID = "47283467";
+	private final static String CASE_CATEGORY = "43544628";
 
 	private final static String CASE_SERVICE = "service";
 
@@ -73,28 +90,17 @@ public class GetTicketList {
 
 	static JSONArray jsonErr = new JSONArray();
 
-	private static String IDSCRM_AUTH_TOKEN = "Ehjp5St4nGGDsK7CZu16M2ztcz3LG00uDAT8F63epFw=";
+//	private static String IDSCRM_AUTH_TOKEN = "Ehjp5St4nGGDsK7CZu16M2ztcz3LG00uDAT8F63epFw=";
+	private static String IDSCRM_AUTH_TOKEN = "dls3A4Z3T2hWtqRqSag0Bg4yDSzqOuZ5OjT6Xj5rJrApC4B//TGF5Q==";
 
 	static Date oneHourBack = null;
 	static boolean isChild = true;
-	static boolean isProd = new ConnectProperties().isTesting;
+	static boolean isProd = new ConnectProperties().isDeploying;
 	static boolean willSync = false;
 	static boolean isServiceCase = false;
 
 	public static void main(String[] args) {
-//		HashMap<String, String> errorLogHash = new HashMap<String, String>();
-//		ArrayList<HashMap<String, String>> errorLogsArray = new ArrayList<>();
 		JSONArray errorJsonArray = new JSONArray();
-		// FIXME TRY ENCODING
-		/*
-		 * String encodedUrl; try { String credent =
-		 * "eldien.hasmanto@treessolutions.com:Welcome1"; encodedUrl =
-		 * URLEncoder.encode(credent, "UTF-8"); System.out.println(encodedUrl);
-		 * byte[] baseAuth = Base64.encodeBase64(credent.getBytes());
-		 * System.out.println(new String(baseAuth)); } catch
-		 * (UnsupportedEncodingException e1) { // TODO Auto-generated catch
-		 * block e1.printStackTrace(); }
-		 */
 
 		String new_customer = "";
 
@@ -123,10 +129,14 @@ public class GetTicketList {
 		boolean justComment = false;
 
 		try {
-			JSONObject jsonTicket = CallUrl.readJsonFromUrl(URL_TICKET_ZENDESK, "GET");
+			JSONObject jsonTicket = CallUrl.readJsonFromUrl(URL_TICKET_ZENDESK, "GET", TOKEN);
 			JSONArray ticketList = jsonTicket.getJSONArray("results");
 			if (ticketList.length() > 0) {
 				for (int i = 0; i < ticketList.length(); i++) {
+					isChild = false;
+					willSync = false;
+					isServiceCase = false;
+					isSynced = false;
 					justComment = false;
 					String ticketID = ticketList.getJSONObject(i).get("id").toString();
 					JSONArray custom_fields = ticketList.getJSONObject(i).getJSONArray("custom_fields");
@@ -149,467 +159,272 @@ public class GetTicketList {
 					StringBuffer URL_USERS_ZENDESK = new StringBuffer(ZENDESK_DOMAIN + "/api/v2/users/");
 					URL_USERS_ZENDESK.append(ticketList.getJSONObject(i).get("requester_id").toString())
 							.append(".json");
-					JSONObject zendUser = CallUrl.readJsonFromUrl(URL_USERS_ZENDESK.toString(), "GET");
-//					String contactGUID = zendUser.getJSONObject("user").getJSONObject("user_fields").get("contactguid")
-//							.toString();
-//					if (zendUser.getJSONObject("user").get("organization_id").toString().equals("null")) {
-//						System.out.println("ORG is NULL");
-//						updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
-//					} else {
-						
-//						System.out.println("ACCOUNT GUID: " + getOrg.getJSONObject("organization")
-//								.getJSONObject("organization_fields").get("accountguid").toString());
-//						if (getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid")
-//								.toString().equalsIgnoreCase("null")) {
-//							System.out.println("ORG GUID is NULL");
-//							updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
-//						} else {
+					JSONObject zendUser = CallUrl.readJsonFromUrl(URL_USERS_ZENDESK.toString(), "GET", TOKEN);
 
-							for (int cf = 0; cf < custom_fields.length(); cf++) {
-								if (custom_fields.getJSONObject(cf).get("id").toString().equals(CASE_CATEGORY)) {
-									if (custom_fields.getJSONObject(cf).get("value").toString().equals(CASE_SERVICE)) {
-										System.out.println("IT IS SERVICE CASE..");
-										isServiceCase = true;
-									} else {
-										System.out.println("IT ISN'T SERVICE CASE..");
-										isServiceCase = false;
-									}
-								}
+					for (int cf = 0; cf < custom_fields.length(); cf++) {
+						if (custom_fields.getJSONObject(cf).get("id").toString().equals(CASE_CATEGORY)) {
+							if (custom_fields.getJSONObject(cf).get("value").toString().equals(CASE_SERVICE)) {
+								System.out.println("IT IS SERVICE CASE..");
+								isServiceCase = true;
+							} else {
+								System.out.println("IT ISN'T SERVICE CASE..");
+								isServiceCase = false;
 							}
+						}
+					}
 
-							if (tags.length() == 0) {
-								System.out.println("THIS TICKET HAS NO TAG");
+					if (tags.length() == 0) {
+						System.out.println("THIS TICKET HAS NO TAG");
+						isChild = false;
+
+						if (isServiceCase) {
+							willSync = true;
+						} else {
+							willSync = false;
+						}
+
+					} else {
+						for (int t = 0; t < tags.length(); t++) {
+							if (tags.get(t).toString().contains("project_parent")) {
+								System.out.println("PARENT CASE FOUND");
+								willSync = true;
 								isChild = false;
-
-								if (isServiceCase) {
-									willSync = true;
-								} else {
-									willSync = false;
-								}
-
+							} else if (tags.get(t).toString().contains("project_child")) {
+								System.out.println("CHILD CASE FOUND");
+								willSync = false;
+								isChild = true;
+							}
+						}
+						if (!willSync && !isChild) {
+							if (isServiceCase) {
+								willSync = true;
 							} else {
-								for (int t = 0; t < tags.length(); t++) {
-									if (tags.get(t).toString().contains("project_parent")) {
-										System.out.println("PARENT CASE FOUND");
-										willSync = true;
-										isChild = false;
-									} else if (tags.get(t).toString().contains("project_child")) {
-										System.out.println("CHILD CASE FOUND");
-										willSync = false;
-										isChild = true;
-									}
-								}
-								if (!willSync && !isChild) {
-									if (isServiceCase) {
-										willSync = true;
+								willSync = false;
+							}
+						}
+					}
+					System.out.println("THIS TICKET " + ticketID + " will be sync : " + willSync);
+					// FIXME LANJUT BROOHH..!
+					if (willSync) {
+						if (isSynced && justComment) {
+							// if (!isChild) {
+							System.out.println("SYNCED already");
+							createComment(ticketList.getJSONObject(i), false);
+							// }
+						} else if (isSynced) {
+							System.out.println("PENDING sync");
+							// FIXME UPDATE CASE
+							System.out.println("already synced, begin UPDATE");
+							ticket.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
+							ticket.put("TicketNo", ticketID);
+							switch (ticketList.getJSONObject(i).get("status").toString()) {
+							case "open":
+								caseStatus = "In Progress";
+								stateCode = "Active";
+								break;
+							case "new":
+								caseStatus = "In Progress";
+								stateCode = "Active";
+								break;
+							case "hold":
+								caseStatus = "On Hold";
+								stateCode = "Active";
+								break;
+							case "pending":
+								caseStatus = "Waiting for Details";
+								stateCode = "Active";
+								break;
+							case "solved":
+								caseStatus = "Problem Resolved";
+								stateCode = "Resolved";
+								break;
+							default:
+								caseStatus = "In Progress";
+								stateCode = "Active";
+								break;
+							}
+							ticket.put("Status", caseStatus);
+							ticket.put("StateCode", stateCode);
+							System.out.println(new JSONObject().put("ticket", ticket));
+							if (zendUser.getJSONObject("user").get("organization_id").toString().equals("null")) {
+								updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
+								errorJsonArray
+										.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG is NULL"));
+							} else {
+								StringBuffer URL_ZENDESK_USER_ORG = new StringBuffer(
+										ZENDESK_DOMAIN + "/api/v2/organizations/")
+												.append(zendUser.getJSONObject("user").get("organization_id"))
+												.append(".json");
+								JSONObject getOrg = CallUrl.readJsonFromUrl(URL_ZENDESK_USER_ORG.toString(), "GET", TOKEN);
+
+								if (getOrg.getJSONObject("organization").getJSONObject("organization_fields")
+										.get("accountguid").toString().equalsIgnoreCase("null")) {
+									System.out.println("ORG GUID is NULL - PENDING");
+									updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
+									errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error",
+											"ORG GUID is NULL"));
+								} else {
+									ticket.put("CustomerID", getOrg.getJSONObject("organization")
+											.getJSONObject("organization_fields").get("accountguid").toString());
+									JSONObject updateCase = writeJsonFromUrl(URL_UPDATE_TICKET_CRM, "POST",
+											new JSONObject().put("ticket", ticket));
+									System.out.println("NEW TICKET:");
+									System.out.println(new JSONObject().put("ticket", ticket));
+									System.out.println(updateCase);
+									if (updateCase.has("Error")
+											|| updateCase.get("responseCode").toString().equalsIgnoreCase("500")) {
+										System.out.println("UPDATE FAILED");
+										updateTicketFailed(FAILED_CREATE_TICKET_ERROR, ticketID, SYNC_TO_CRM, PENDING);
+										errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error",
+												updateCase.getString("Error")));
 									} else {
-										willSync = false;
+										updateTicketSuccess(ticketID, SYNC_TO_CRM, SYNCED);
+										createComment(ticketList.getJSONObject(i), false);
 									}
 								}
 							}
-							System.out.println("THIS TICKET " + ticketID + " will be sync : " + willSync);
-							// FIXME LANJUT BROOHH..!
-							if (willSync) {
-								if (isSynced && justComment) {
-									// if (!isChild) {
-									System.out.println("SYNCED already");
-									createComment(ticketList.getJSONObject(i), false);
-									// }
-								} else if (isSynced) {
-									System.out.println("PENDING sync");
-									// FIXME UPDATE CASE
-									System.out.println("already synced, begin UPDATE");
-									ticket.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
-									ticket.put("TicketNo", ticketID);
-									switch (ticketList.getJSONObject(i).get("status").toString()) {
-									case "open":
-										caseStatus = "In Progress";
-										stateCode = "Active";
-										break;
-									case "new":
-										caseStatus = "In Progress";
-										stateCode = "Active";
-										break;
-									case "hold":
-										caseStatus = "On Hold";
-										stateCode = "Active";
-										break;
-									case "pending":
-										caseStatus = "Waiting for Details";
-										stateCode = "Active";
-										break;
-									case "solved":
-										caseStatus = "Problem Resolved";
-										stateCode = "Inactive";
-										break;
-									default:
-										caseStatus = "In Progress";
-										stateCode = "Active";
-										break;
-									}
-									ticket.put("Status", caseStatus);
-									ticket.put("StateCode", stateCode);
-									System.out.println(new JSONObject().put("ticket", ticket));
-									if (zendUser.getJSONObject("user").get("organization_id").toString().equals("null")) {
-										updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
-										errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG is NULL"));
-//										errorLogHash.put("ticketID", ticketID);
-//										errorLogHash.put("error", "ORG is NULL");
-//										errorLogsArray.add(errorLogHash);
-//										errorLogHash.clear();
-									} else {
-										StringBuffer URL_ZENDESK_USER_ORG = new StringBuffer(ZENDESK_DOMAIN + "/api/v2/organizations/")
-												.append(zendUser.getJSONObject("user").get("organization_id")).append(".json");
-										JSONObject getOrg = CallUrl.readJsonFromUrl(URL_ZENDESK_USER_ORG.toString(), "GET");
-										
-										if (getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString().equalsIgnoreCase("null")) {
-											System.out.println("ORG GUID is NULL - PENDING");
-											updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
-											errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG GUID is NULL"));
-//											errorLogHash.put("ticketID", ticketID);
-//											errorLogHash.put("error", "ORG GUID is NULL");
-//											errorLogsArray.add(errorLogHash);
-//											errorLogHash.clear();
-										} else {
-											ticket.put("CustomerID", getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString());
-											JSONObject updateCase = writeJsonFromUrl(URL_UPDATE_TICKET_CRM, "POST",
-													new JSONObject().put("ticket", ticket));
-											System.out.println("NEW TICKET:");
-											System.out.println(new JSONObject().put("ticket", ticket));
-											System.out.println(updateCase);
-											if (updateCase.has("Error")
-													|| updateCase.get("responseCode").toString().equalsIgnoreCase("500")) {
-												System.out.println("UPDATE FAILED");
-												updateTicketFailed(FAILED_CREATE_TICKET_ERROR, ticketID, SYNC_TO_CRM, PENDING);
-												errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error", updateCase.getString("Error")));
-//												errorLogHash.put("ticketID", ticketID);
-//												errorLogHash.put("error", updateCase.getString("Error"));
-//												errorLogsArray.add(errorLogHash);
-//												errorLogHash.clear();
-											} else {
-												updateTicketSuccess(ticketID, SYNC_TO_CRM, SYNCED);
-												createComment(ticketList.getJSONObject(i), false);
-											}
-										}
-									}
-									
+
+						} else {
+							System.out.println("FAILED or CREATE new");
+							// FIXME CREATE NEW CASE
+							// FIXME GET OWNER ID
+							if (ticketList.getJSONObject(i).get("assignee_id").toString().equals("null")) {
+								ownerID = "GAMMA\\FaradilaUtami";
+							} else {
+								URL_USERS_ZENDESK = new StringBuffer(ZENDESK_DOMAIN + "/api/v2/users/")
+										.append(ticketList.getJSONObject(i).get("assignee_id")).append(".json");
+								JSONObject zendAssUser = CallUrl.readJsonFromUrl(URL_USERS_ZENDESK.toString(), "GET", TOKEN);
+								if (zendAssUser.getJSONObject("user").getJSONObject("user_fields").get("msadusername")
+										.toString().equalsIgnoreCase("null")
+										|| zendAssUser.getJSONObject("user").getJSONObject("user_fields")
+												.get("msadusername").toString().equalsIgnoreCase("null")) {
+									ownerID = "GAMMA\\FaradilaUtami";
 								} else {
-									System.out.println("FAILED or CREATE new");
-									// FIXME CREATE NEW CASE
-									// FIXME GET OWNER ID
-									if (ticketList.getJSONObject(i).get("assignee_id").toString().equals("null")) {
-										ownerID = "GAMMA\\FaradilaUtami";
-									} else {
-										URL_USERS_ZENDESK = new StringBuffer(ZENDESK_DOMAIN + "/api/v2/users/")
-												.append(ticketList.getJSONObject(i).get("assignee_id")).append(".json");
-										JSONObject zendAssUser = CallUrl.readJsonFromUrl(URL_USERS_ZENDESK.toString(),
-												"GET");
-										if (zendAssUser.getJSONObject("user").getJSONObject("user_fields")
-												.get("msadusername").toString().equalsIgnoreCase("null")
-												|| zendAssUser.getJSONObject("user").getJSONObject("user_fields")
-														.get("msadusername").toString().equalsIgnoreCase("null")) {
-											ownerID = "GAMMA\\FaradilaUtami";
-										} else {
-											ownerID = zendAssUser.getJSONObject("user").getJSONObject("user_fields")
-													.get("msadusername").toString();
-											// System.out.println(ownerID);
-										}
-									}
-									String caseType = null;
-									for (int z = 0; z < custom_fields.length(); z++) {
-										if (custom_fields.getJSONObject(z).get("id").toString().equals(CASE_TYPE)) {
-											switch (custom_fields.getJSONObject(z).get("value").toString()) {
-											case "request_installation_commissioning":
-												caseType = "Request - Installation & Commissioning";
-												break;
-											case "customer_service":
-												caseType = "Customer Service";
-												break;
-											case "request_preventive_maintenance":
-												caseType = "Request - Preventive Maintenance";
-												break;
-											case "training":
-												caseType = "Training";
-												break;
-											case "promotion":
-												caseType = "Promotion";
-												break;
-											case "question":
-												caseType = "Question";
-												break;
-											case "problem":
-												caseType = "Problem";
-												break;
-											case "training_edu":
-												caseType = "Training-Edu";
-												break;
-											case "routine_visit":
-												caseType = "Routine Visit";
-												break;
-											default:
-												caseType = "Customer Service";
-												break;
-											}
-										} else if (custom_fields.getJSONObject(z).get("id").toString()
-												.equals(INSTALL_BASE_ID)) {
-											if (!custom_fields.getJSONObject(z).get("value").toString()
-													.equalsIgnoreCase("null")) {
-												ticket.put("InstalledBaseID",
-														custom_fields.getJSONObject(z).get("value").toString());
-											}
-										}
-									}
-									ticket.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
-									ticket.put("TicketNo", ticketID);
-									ticket.put("Subject", ticketList.getJSONObject(i).get("subject"));
-									ticket.put("CustomerID", new_customer.replace("{", "").replace("}", ""));
-									switch (ticketList.getJSONObject(i).get("status").toString()) {
-									case "open":
-										caseStatus = "In Progress";
-										stateCode = "Active";
-										break;
-									case "new":
-										caseStatus = "In Progress";
-										stateCode = "Active";
-										break;
-									case "hold":
-										caseStatus = "On Hold";
-										stateCode = "Active";
-										break;
-									case "Pending":
-										caseStatus = "Waiting for Details";
-										stateCode = "Active";
-										break;
-									case "solved":
-										caseStatus = "Problem Resolved";
-										stateCode = "Inactive";
-										break;
-									default:
-										caseStatus = "In Progress";
-										stateCode = "Active";
-										break;
-									}
-									ticket.put("Type", caseType);
-									ticket.put("Status", caseStatus);
-									ticket.put("StateCode", stateCode);
-									ticket.put("OwnerID", ownerID.replace("\\\\", "\\"));
+									ownerID = zendAssUser.getJSONObject("user").getJSONObject("user_fields")
+											.get("msadusername").toString();
 									// System.out.println(ownerID);
-									System.out.println(new JSONObject().put("ticket", ticket));
-//									if (new_customer.equalsIgnoreCase("null")) {
-//										System.out.println("CANNOT GET GUID/GUID IS NULL");
-//										updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
-//									} else {
-									if (zendUser.getJSONObject("user").get("organization_id").toString().equals("null")) {
-										updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
-										errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG is NULL"));
-//										errorLogHash.put("ticketID", ticketID);
-//										errorLogHash.put("error", "ORG is NULL");
-//										errorLogsArray.add(errorLogHash);
-//										errorLogHash.clear();
-										
-									} else {
-										StringBuffer URL_ZENDESK_USER_ORG = new StringBuffer(ZENDESK_DOMAIN + "/api/v2/organizations/")
-												.append(zendUser.getJSONObject("user").get("organization_id")).append(".json");
-										JSONObject getOrg = CallUrl.readJsonFromUrl(URL_ZENDESK_USER_ORG.toString(), "GET");
-//										getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString();
-										if (getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString().equalsIgnoreCase("null")) {
-											System.out.println("ORG GUID is NULL - FAILED");
-											updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
-											errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG GUID is NULL"));
-//											errorLogHash.put("ticketID", ticketID);
-//											errorLogHash.put("error", "ORG GUID is NULL");
-//											errorLogsArray.add(errorLogHash);
-//											errorLogHash.clear();
-										} else {
-											ticket.put("CustomerID", getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString());
-											JSONObject createCase = writeJsonFromUrl(URL_CREATE_TICKET_CRM, "POST",
-													new JSONObject().put("ticket", ticket));
-											System.out.println("NEW TICKET:");
-											System.out.println(new JSONObject().put("ticket", ticket));
-											System.out.println(createCase);
-											if (createCase.has("Error")) {
-												System.out.println();
-												updateTicketFailed(FAILED_CREATE_TICKET_ERROR, ticketID, SYNC_TO_CRM, FAILED);
-												errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error",createCase.getString("Error")));
-//												errorLogHash.put("ticketID", ticketID);
-//												errorLogHash.put("error", createCase.getString("Error"));
-//												errorLogsArray.add(errorLogHash);
-//												errorLogHash.clear();
-											} else {
-												updateTicketSuccess(ticketID, SYNC_TO_CRM, SYNCED);
-												System.out.println("CREATE NOTES");
-												createComment(ticketList.getJSONObject(i), true);
-											}
-										}
+								}
+							}
+							String caseType = null;
+							for (int z = 0; z < custom_fields.length(); z++) {
+								if (custom_fields.getJSONObject(z).get("id").toString().equals(CASE_TYPE)) {
+									switch (custom_fields.getJSONObject(z).get("value").toString()) {
+									case "request_installation_commissioning":
+										caseType = "Request - Installation & Commissioning";
+										break;
+									case "customer_service":
+										caseType = "Customer Service";
+										break;
+									case "request_preventive_maintenance":
+										caseType = "Request - Preventive Maintenance";
+										break;
+									case "training":
+										caseType = "Training";
+										break;
+									case "promotion":
+										caseType = "Promotion";
+										break;
+									case "question":
+										caseType = "Question";
+										break;
+									case "problem":
+										caseType = "Problem";
+										break;
+									case "training_edu":
+										caseType = "Training-Edu";
+										break;
+									case "routine_visit":
+										caseType = "Routine Visit";
+										break;
+									default:
+										caseType = "Customer Service";
+										break;
+									}
+								} else if (custom_fields.getJSONObject(z).get("id").toString()
+										.equals(INSTALL_BASE_ID)) {
+									if (!custom_fields.getJSONObject(z).get("value").toString()
+											.equalsIgnoreCase("null")) {
+										ticket.put("InstalledBaseID",
+												custom_fields.getJSONObject(z).get("value").toString());
 									}
 								}
-							} else {
-								System.out.println("THIS TICKET WILL NOT BE SYNCED");
 							}
-//						}
-//					}
+							ticket.put("AuthenticationToken", IDSCRM_AUTH_TOKEN);
+							ticket.put("TicketNo", ticketID);
+							ticket.put("Subject", ticketList.getJSONObject(i).get("subject"));
+							ticket.put("CustomerID", new_customer.replace("{", "").replace("}", ""));
+							switch (ticketList.getJSONObject(i).get("status").toString()) {
+							case "open":
+								caseStatus = "In Progress";
+								stateCode = "Active";
+								break;
+							case "new":
+								caseStatus = "In Progress";
+								stateCode = "Active";
+								break;
+							case "hold":
+								caseStatus = "On Hold";
+								stateCode = "Active";
+								break;
+							case "pending":
+								caseStatus = "Waiting for Details";
+								stateCode = "Active";
+								break;
+							case "solved":
+								caseStatus = "Problem Resolved";
+								stateCode = "Resolved";
+								break;
+							default:
+								caseStatus = "In Progress";
+								stateCode = "Active";
+								break;
+							}
+							ticket.put("Type", caseType);
+							ticket.put("Status", caseStatus);
+							ticket.put("StateCode", stateCode);
+							ticket.put("OwnerID", ownerID.replace("\\\\", "\\"));
+							System.out.println(new JSONObject().put("ticket", ticket));
+							if (zendUser.getJSONObject("user").get("organization_id").toString().equals("null")) {
+								updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
+								errorJsonArray
+										.put(new JSONObject().put("ticketID", ticketID).put("error", "ORG is NULL"));
 
-					// FIXME OLD FLOW
-					/*
-					 * if (tags.length() == 0){ System.out.println("Ticket: " +
-					 * ticketID + " is a CHILD ticket.."); isChild = true; }
-					 * 
-					 * for (int y = 0; y < tags.length(); y++) {
-					 * if(tags.get(y).toString().contains("project_parent")) {
-					 * System.out.println("Ticket: " + ticketID +
-					 * " is a PARENT ticket.."); isChild = false; } }
-					 * System.out.println("Ticket is CHILD Ticket: " + isChild);
-					 * System.out.println("CONTACT GUID: "+ contactGUID); if
-					 * (zendUser.getJSONObject("user").get("organization_id").
-					 * toString().equals("null")) { new_customer = contactGUID;
-					 * } else { StringBuffer URL_ZENDESK_USER_ORG = new
-					 * StringBuffer(ZENDESK_DOMAIN + "/api/v2/organizations/")
-					 * .append(zendUser.getJSONObject("user").get(
-					 * "organization_id")).append(".json"); JSONObject getOrg =
-					 * CallUrl.readJsonFromUrl(URL_ZENDESK_USER_ORG.toString(),
-					 * "GET"); System.out.println("ACCOUNT GUID: " +
-					 * getOrg.getJSONObject("organization").getJSONObject(
-					 * "organization_fields") .get("accountguid").toString());
-					 * if (getOrg.getJSONObject("organization").getJSONObject(
-					 * "organization_fields")
-					 * .get("accountguid").toString().equalsIgnoreCase("null")){
-					 * new_customer = contactGUID; } else { new_customer =
-					 * "ACCOUNT GUID: " +
-					 * getOrg.getJSONObject("organization").getJSONObject(
-					 * "organization_fields") .get("accountguid").toString(); }
-					 * }
-					 */
-
-					// if
-					// (getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid")
-					// .toString().equalsIgnoreCase("null")) {
-					// updateTicketFailed(FAILED_ORG_GUID_NULL, ticketID,
-					// SYNC_TO_CRM, FAILED);
-					// } else {
-
-					// FIXME OLD FLOW PT.2
-					/*
-					 * if (isSynced && justComment) { if (!isChild) {
-					 * System.out.println("SYNCED already");
-					 * createComment(ticketList.getJSONObject(i), false); } }
-					 * else if (isSynced) { System.out.println("PENDING sync");
-					 * // FIXME UPDATE CASE
-					 * System.out.println("already synced, begin UPDATE");
-					 * ticket.put("AuthenticationToken", AUTH_TOKEN);
-					 * ticket.put("TicketNo", ticketID); switch
-					 * (ticketList.getJSONObject(i).get("status").toString()) {
-					 * case "open": caseStatus = "In Progress"; stateCode =
-					 * "Active"; break; case "new": caseStatus = "In Progress";
-					 * stateCode = "Active"; break; case "hold": caseStatus =
-					 * "On Hold"; stateCode = "Active"; break; case "pending":
-					 * caseStatus = "Waiting for Details"; stateCode = "Active";
-					 * break; case "solved": caseStatus = "Problem Resolved";
-					 * stateCode = "Inactive"; break; default: caseStatus =
-					 * "In Progress"; stateCode = "Active"; break; }
-					 * ticket.put("Status", caseStatus); ticket.put("StateCode",
-					 * stateCode); System.out.println(new
-					 * JSONObject().put("ticket", ticket)); JSONObject
-					 * updateCase = writeJsonFromUrl(URL_UPDATE_TICKET_CRM,
-					 * "POST", new JSONObject().put("ticket", ticket));
-					 * System.out.println(updateCase); if (!isChild) { if
-					 * (updateCase.has("Error")) {
-					 * updateTicketFailed(FAILED_CREATE_TICKET_ERROR, ticketID,
-					 * SYNC_TO_CRM, PENDING); } else {
-					 * updateTicketSuccess(ticketID, SYNC_TO_CRM, SYNCED);
-					 * createComment(ticketList.getJSONObject(i), false); } } }
-					 * else { if(!isChild){
-					 * System.out.println("FAILED or CREATE new"); // FIXME
-					 * CREATE NEW CASE // FIXME GET OWNER ID if
-					 * (ticketList.getJSONObject(i).get("assignee_id").toString(
-					 * ).equals("null")) { ownerID = "GAMMA\\FaradilaUtami"; }
-					 * else { URL_USERS_ZENDESK = new
-					 * StringBuffer(ZENDESK_DOMAIN + "/api/v2/users/")
-					 * .append(ticketList.getJSONObject(i).get("assignee_id")).
-					 * append(".json"); JSONObject zendAssUser =
-					 * CallUrl.readJsonFromUrl(URL_USERS_ZENDESK.toString(),
-					 * "GET"); if
-					 * (zendAssUser.getJSONObject("user").getJSONObject(
-					 * "user_fields")
-					 * .get("msad_username").toString().equalsIgnoreCase("null")
-					 * || zendAssUser.getJSONObject("user").getJSONObject(
-					 * "user_fields")
-					 * .get("msad_username").toString().equalsIgnoreCase("null")
-					 * ) { ownerID = "GAMMA\\FaradilaUtami"; } else { ownerID =
-					 * zendAssUser.getJSONObject("user").getJSONObject(
-					 * "user_fields") .get("msad_username").toString(); //
-					 * System.out.println(ownerID); } } //
-					 * System.out.println("not synced, begin // CREATE"); String
-					 * caseType = null; for (int z = 0; z <
-					 * custom_fields.length(); z++) { if
-					 * (custom_fields.getJSONObject(z).get("id").toString().
-					 * equals(CASE_TYPE)) { switch
-					 * (custom_fields.getJSONObject(z).get("value").toString())
-					 * { case "request_installation_commissioning": caseType =
-					 * "Request - Installation & Commissioning"; break; case
-					 * "customer_service": caseType = "Customer Service"; break;
-					 * case "request_preventive_maintenance": caseType =
-					 * "Request - Preventive Maintenance"; break; case
-					 * "training": caseType = "Training"; break; case
-					 * "promotion": caseType = "Promotion"; break; case
-					 * "question": caseType = "Question"; break; case "problem":
-					 * caseType = "Problem"; break; case "training_edu":
-					 * caseType = "Training-Edu"; break; case "routine_visit":
-					 * caseType = "Routine Visit"; break; default: caseType =
-					 * "Customer Service"; break; } } else if
-					 * (custom_fields.getJSONObject(z).get("id").toString()
-					 * .equals(INSTALL_BASE_ID)) { if
-					 * (!custom_fields.getJSONObject(z).get("value").toString()
-					 * .equalsIgnoreCase("null")) {
-					 * ticket.put("InstalledBaseID",
-					 * custom_fields.getJSONObject(z).get("value").toString());
-					 * } } } // FIXME IS A CHILD TICKET? // for (int y = 0; y <
-					 * tags.length(); y++) { // if //
-					 * (tags.get(y).toString().matches(".*\\d+.*")) // {
-					 * // @SuppressWarnings("resource") // Scanner in = new //
-					 * Scanner(tags.get(y).toString()).useDelimiter("[^0-9]+");
-					 * // int integer = in.nextInt(); // parentId =
-					 * String.valueOf(integer); // } // if //
-					 * (tags.get(y).toString().contains("project_child")) // {
-					 * // isChild = true; //
-					 * System.out.println("is a child ticket"); //
-					 * ticket.put("ParentTicketNo", parentId); // } // }
-					 * ticket.put("AuthenticationToken", AUTH_TOKEN);
-					 * ticket.put("TicketNo", ticketID); ticket.put("Subject",
-					 * ticketList.getJSONObject(i).get("subject"));
-					 * ticket.put("CustomerID", new_customer.replace("{",
-					 * "").replace("}", "")); switch
-					 * (ticketList.getJSONObject(i).get("status").toString()) {
-					 * case "open": caseStatus = "In Progress"; stateCode =
-					 * "Active"; break; case "new": caseStatus = "In Progress";
-					 * stateCode = "Active"; break; case "hold": caseStatus =
-					 * "On Hold"; stateCode = "Active"; break; case "Pending":
-					 * caseStatus = "Waiting for Details"; stateCode = "Active";
-					 * break; case "solved": caseStatus = "Problem Resolved";
-					 * stateCode = "Inactive"; break; default: caseStatus =
-					 * "In Progress"; stateCode = "Active"; break; }
-					 * ticket.put("Type", caseType); ticket.put("Status",
-					 * caseStatus); ticket.put("StateCode", stateCode);
-					 * ticket.put("OwnerID", ownerID.replace("\\\\", "\\")); //
-					 * System.out.println(ownerID); System.out.println(new
-					 * JSONObject().put("ticket", ticket)); if
-					 * (new_customer.equalsIgnoreCase("null")){
-					 * System.out.println("CANNOT GET GUID/GUID IS NULL");
-					 * updateTicketFailed(FAILED_ORG_GUID_NULL, ticketID,
-					 * SYNC_TO_CRM, FAILED); } else { JSONObject createCase =
-					 * writeJsonFromUrl(URL_CREATE_TICKET_CRM, "POST", new
-					 * JSONObject().put("ticket", ticket));
-					 * System.out.println(createCase); if
-					 * (createCase.has("Error")) {
-					 * updateTicketFailed(FAILED_CREATE_TICKET_ERROR, ticketID,
-					 * SYNC_TO_CRM, FAILED); } else { if(!isChild){
-					 * updateTicketSuccess(ticketID, SYNC_TO_CRM, SYNCED);
-					 * System.out.println("CREATE NOTES");
-					 * createComment(ticketList.getJSONObject(i), true); } } }
-					 * 
-					 * } }
-					 */
-					// }
-					// }
+							} else {
+								StringBuffer URL_ZENDESK_USER_ORG = new StringBuffer(
+										ZENDESK_DOMAIN + "/api/v2/organizations/")
+												.append(zendUser.getJSONObject("user").get("organization_id"))
+												.append(".json");
+								JSONObject getOrg = CallUrl.readJsonFromUrl(URL_ZENDESK_USER_ORG.toString(), "GET", TOKEN);
+								if (getOrg.getJSONObject("organization").getJSONObject("organization_fields")
+										.get("accountguid").toString().equalsIgnoreCase("null")) {
+									System.out.println("ORG GUID is NULL - FAILED");
+									updateTicketFailed(FAILED_ORG_NULL, ticketID, SYNC_TO_CRM, FAILED);
+									errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error",
+											"ORG GUID is NULL"));
+								} else {
+									ticket.put("CustomerID", getOrg.getJSONObject("organization")
+											.getJSONObject("organization_fields").get("accountguid").toString());
+									JSONObject createCase = writeJsonFromUrl(URL_CREATE_TICKET_CRM, "POST",
+											new JSONObject().put("ticket", ticket));
+									System.out.println("NEW TICKET:");
+									System.out.println(new JSONObject().put("ticket", ticket));
+									System.out.println(createCase);
+									if (createCase.has("Error")) {
+										System.out.println();
+										updateTicketFailed(FAILED_CREATE_TICKET_ERROR, ticketID, SYNC_TO_CRM, FAILED);
+										errorJsonArray.put(new JSONObject().put("ticketID", ticketID).put("error",
+												createCase.getString("Error")));
+									} else {
+										updateTicketSuccess(ticketID, SYNC_TO_CRM, SYNCED);
+										System.out.println("CREATE NOTES");
+										createComment(ticketList.getJSONObject(i), true);
+									}
+								}
+							}
+						}
+					} else {
+						System.out.println("THIS TICKET WILL NOT BE SYNCED");
+					}
 				}
 				UsersWriter.writeLogs(errorJsonArray);
 				System.out.println(errorJsonArray);
@@ -627,11 +442,11 @@ public class GetTicketList {
 			System.out.println("JSONS");
 		}
 	}
-	
+
 	public static boolean orgGuidIsNull(StringBuffer org_url) throws JSONException {
-		JSONObject getOrg = CallUrl.readJsonFromUrl(org_url.toString(), "GET");
+		JSONObject getOrg = CallUrl.readJsonFromUrl(org_url.toString(), "GET", TOKEN);
 		getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString();
-		
+
 		return getOrg.getJSONObject("organization").getJSONObject("organization_fields").get("accountguid").toString()
 				.equalsIgnoreCase("null");
 	}
@@ -674,15 +489,12 @@ public class GetTicketList {
 						}
 					}
 				}
-				// System.out.println(new JSONObject().put("note", notes));
 				JSONObject createNotes = writeJsonFromUrl(URL_CREATE_NOTES_CRM, "POST",
 						new JSONObject().put("note", notes));
-				// System.out.println(createNotes);
 				if (createNotes.has("Error")) {
 					isError = true;
 				} else {
 					System.out.println("DONE");
-//					updateTicketSuccess(ticketList.get("id").toString(), SYNC_TO_CRM, SYNCED);
 				}
 			} else {
 				if (date2.compareTo(oneHourBack) > 0) {
@@ -707,14 +519,10 @@ public class GetTicketList {
 							}
 						}
 					}
-					// System.out.println(new JSONObject().put("note", notes));
 					JSONObject createNotes = writeJsonFromUrl(URL_CREATE_NOTES_CRM, "POST",
 							new JSONObject().put("note", notes));
-					// System.out.println(createNotes);
 					if (createNotes.has("Error")) {
 						isError = true;
-//						updateTicketFailed(FAILED_CREATE_NOTE_ERROR, ticketList.get("id").toString(), SYNC_TO_CRM,
-//								PENDING);
 					} else {
 						System.out.println("DONE create NOTES");
 					}
@@ -734,13 +542,12 @@ public class GetTicketList {
 	private static JSONObject getTicketComments(String ticketId) {
 		StringBuffer URL_ZENDESK_TICKET_COMMENT = new StringBuffer(
 				ZENDESK_DOMAIN + "/api/v2/tickets/" + ticketId + "/comments.json");
-		JSONObject comment = CallUrl.readJsonFromUrl(URL_ZENDESK_TICKET_COMMENT.toString(), "GET");
+		JSONObject comment = CallUrl.readJsonFromUrl(URL_ZENDESK_TICKET_COMMENT.toString(), "GET", TOKEN);
 		return comment;
 	}
 
 	public static JSONObject updateTicketFailed(String reason, String ticketId, String key, String flags)
 			throws JSONException {
-//		String realReason = "";
 		StringBuffer URL_UPDATE_TICKET_ZENDESK = new StringBuffer(ZENDESK_DOMAIN + "/api/v2/tickets/");
 		URL_UPDATE_TICKET_ZENDESK.append(ticketId).append(".json");
 		JSONObject updateZendTicketBody = new JSONObject();
@@ -752,7 +559,6 @@ public class GetTicketList {
 		System.out.println(updateZendTicketBody);
 		JSONObject updateZendTicket = writeJsonFromUrl(URL_UPDATE_TICKET_ZENDESK.toString(), "PUT",
 				new JSONObject().put("ticket", updateZendTicketBody));
-		// System.out.println(updateZendTicket);
 		return updateZendTicket;
 	}
 
@@ -763,7 +569,6 @@ public class GetTicketList {
 		updateZendTicketBody.put("custom_fields", new JSONObject().put("id", key).put("value", flags));
 		JSONObject updateZendTicket = writeJsonFromUrl(URL_UPDATE_TICKET_ZENDESK.toString(), "PUT",
 				new JSONObject().put("ticket", updateZendTicketBody));
-		// System.out.println(updateZendTicket.getJSONObject("ticket").get("id"));
 		return updateZendTicket;
 	}
 
@@ -786,13 +591,12 @@ public class GetTicketList {
 				con.setRequestMethod(method);
 				con.setDoOutput(true);
 
-				// add request header
+				// FIXME request header
 				con.setRequestProperty("User-Agent", USER_AGENT);
 				con.addRequestProperty("Authorization", "Basic " + TOKEN);
 				con.addRequestProperty("Content-Type", "application/json; charset=UTF-8");
 				// con.setConnectTimeout(10000);
 				// con.setReadTimeout(10000);
-				// System.out.println(ticket);
 
 				OutputStream os = con.getOutputStream();
 				OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");

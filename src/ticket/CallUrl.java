@@ -22,12 +22,12 @@ public class CallUrl {
 	static int PROXY_PORT = 8080;
 
 	private final static String USER_AGENT = "Mozilla/5.0";
-	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";
+//	private final static String TOKEN = "ZmFyYWRpbGF1dGFtaUBpZHNtZWQuY29tOlczbGNvbWUxMjM";
 
 	static JSONArray jsonErr = new JSONArray();
-	static boolean conPro = new ConnectProperties().isTesting;
+	static boolean conPro = new ConnectProperties().isDeploying;
 
-	public static JSONObject readJsonFromUrl(String url, String method) {
+	public static JSONObject readJsonFromUrl(String url, String method, String TOKEN) {
 		HttpURLConnection con = null;
 		JSONObject json = null;
 		int retry = 1;

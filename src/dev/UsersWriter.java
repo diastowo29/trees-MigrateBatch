@@ -55,7 +55,7 @@ public class UsersWriter {
 		// System.out.println(errorJsonArray);
 		// System.out.println(df.format(currentDate));
 		try {
-			File file = new File("D:/Java Project/Logs_" + df.format(currentDate) + ".txt");
+			File file = new File("C:/JAVA/MigrateBatch/Logs_" + df.format(currentDate) + ".txt");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
